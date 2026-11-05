@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#FFFFFF">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<title>주문 · COMMA</title>
+<style>
+/* 체험용 구매 페이지. 실제 결제가 없다.
+   안전 규칙: <form>·전송 코드를 넣지 않고, 개인정보·카드 칸은 모두 readonly로 미리 채운다.
+   사람들이 진짜 카드 번호를 실수로 입력할 수 없게 하기 위한 것이므로 readonly를 풀지 말 것. */
+@font-face{font-family:"Instrument Sans";src:url(assets/fonts/InstrumentSans-Variable.woff2) format("woff2");font-weight:400 700;font-display:swap}
+@font-face{font-family:"Instrument Serif";src:url(assets/fonts/InstrumentSerif-Italic.woff2) format("woff2");font-style:italic;font-weight:400;font-display:swap}
+@font-face{font-family:"Wanted Sans";src:url(assets/fonts/WantedSans-Variable-kr.woff2) format("woff2");font-weight:400 1000;font-display:swap}
+:root{
+  --paper:#FFFFFF;--ink:#282828;--ink-2:#596068;--line:#E3E9ED;--mist:#F2F6F8;--sky:#72DCFF;--sky-edge:#23DAFF;--yellow:#EAFE45;
+  --display:"Instrument Sans","Wanted Sans","Apple SD Gothic Neo",system-ui,sans-serif;
+  --serif:"Instrument Serif","Times New Roman",serif;
+  --body:"Wanted Sans","Apple SD Gothic Neo","Noto Sans KR",system-ui,sans-serif;
+  --x:max(24px,calc((100vw - 1180px)/2));
+  --ease:cubic-bezier(.65,0,.35,1);
+  color-scheme:light;
+}
+*,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--mist);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6;word-break:keep-all;-webkit-font-smoothing:antialiased}
+h1,h2,h3,p,ul,ol{margin:0;padding:0}
+ul,ol{list-style:none}
+img{display:block;max-width:100%}
+a{color:inherit}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+:focus-visible{outline:3px solid #1C9FD0;outline-offset:2px}
+.top{position:sticky;top:0;z-index:20;background:#fff;box-shadow:0 1px 0 var(--line);display:flex;align-items:center;gap:20px;height:64px;padding-inline:var(--x)}
+.top .logo img{height:22px;width:auto}
+.steps{display:flex;gap:8px;margin:0 auto;font-size:14.5px;font-weight:600;color:var(--ink-2)}
+.steps li+li::before{content:"›";margin-right:8px;opacity:.5}
+.steps .cur{color:var(--ink);font-weight:700}
+.back{font-size:14.5px;font-weight:600;color:var(--ink-2);white-space:nowrap}
+.grid{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,4.6fr);gap:24px;padding:28px var(--x) 72px;align-items:start}
+h1{font-size:clamp(28px,3vw,38px);font-weight:700;letter-spacing:-.035em;margin:30px var(--x) 0;line-height:1.25}
+.card{background:#fff;border-radius:20px;padding:26px 28px}
+.card+.card{margin-top:14px}
+.card h2{font-size:19px;font-weight:700;letter-spacing:-.025em;margin-bottom:16px;display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.card h2 a{font-size:14px;font-weight:600;color:var(--ink-2)}
+.item{display:grid;grid-template-columns:68px 1fr auto;gap:14px;align-items:center;padding:10px 0}
+.item+.item{border-top:1px solid var(--line)}
+.item .th{width:68px;height:68px;border-radius:14px;background:var(--mist);display:grid;place-items:center;overflow:hidden}
+.item .th img{max-height:60px;width:auto;mix-blend-mode:multiply}
+.item b{display:block;font-weight:700;letter-spacing:-.02em;line-height:1.4}
+.item span{font-size:14.5px;color:var(--ink-2);line-height:1.4}
+.item .p{text-align:right;font-family:var(--display);font-weight:600;white-space:nowrap;color:var(--ink);font-size:16px}
+.item .p s{display:block;font-weight:500;font-size:13.5px;color:var(--ink-2)}
+.qty{display:inline-flex;align-items:center;gap:0;margin-top:6px;border-radius:10px;box-shadow:inset 0 0 0 1px var(--line)}
+.qty button{width:32px;height:30px;font-size:16px;font-weight:600}
+.qty output{min-width:24px;text-align:center;font-weight:700;font-size:14.5px}
+.f{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.f .w{grid-column:1/-1}
+label{display:block;font-size:13.5px;font-weight:600;color:var(--ink-2);margin-bottom:5px}
+input[readonly],select{width:100%;height:46px;border:0;border-radius:11px;background:var(--mist);padding:0 14px;font:inherit;font-weight:500;color:var(--ink)}
+input[readonly]{cursor:default;outline:none;user-select:none;-webkit-user-select:none;font-family:var(--display);letter-spacing:.01em}
+.pay{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:18px}
+.pay button{height:50px;border-radius:12px;text-align:center;font-weight:700;font-size:15px;letter-spacing:-.02em;box-shadow:inset 0 0 0 1.5px var(--line);transition:box-shadow .2s}
+.pay button[aria-pressed=true]{box-shadow:inset 0 0 0 2px var(--ink)}
+.cc{display:grid;grid-template-columns:minmax(0,270px) minmax(0,1fr);gap:22px;align-items:start}
+.plastic{position:relative;aspect-ratio:1.586;border-radius:16px;background:var(--ink);color:#fff;padding:18px 20px;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden;font-family:var(--display)}
+.plastic img{height:17px;width:auto;align-self:flex-start;filter:brightness(0) invert(1)}
+.plastic .no{font-size:18px;letter-spacing:.06em;font-variant-numeric:tabular-nums;font-weight:500}
+.plastic .ln{display:flex;justify-content:space-between;font-size:13px;opacity:.8}
+.four{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.four input{text-align:center;padding:0 2px}
+.f4{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:12px}
+.demo{display:flex;gap:9px;margin-top:16px;padding:12px 14px;border-radius:12px;background:#FBFEDD;font-size:14.5px;line-height:1.5;font-weight:500}
+.demo::before{content:"";flex:none;width:9px;height:9px;border-radius:50%;margin-top:7px;background:var(--ink)}
+.chk{display:flex;gap:10px;align-items:flex-start;padding:7px 0;font-size:15.5px;cursor:pointer;line-height:1.45;color:var(--ink);font-weight:500;margin:0}
+.chk input{width:20px;height:20px;margin:1px 0 0;accent-color:var(--ink);flex:none}
+.sum{position:sticky;top:84px}
+.ebb{display:flex;justify-content:space-between;align-items:center;gap:8px 14px;flex-wrap:wrap;background:var(--ink);color:#fff;border-radius:16px;padding:12px 18px;margin-bottom:12px;font-size:14.5px;font-weight:600}
+.ebb b{font-family:var(--serif);font-style:italic;font-weight:400;font-size:22px;color:var(--sky);margin-right:6px}
+.ebb span:last-child{font-family:var(--display);font-variant-numeric:tabular-nums}
+.line{display:flex;justify-content:space-between;gap:12px;padding:5px 0;font-size:15.5px}
+.line span:last-child{font-family:var(--display);font-weight:500}
+.line.off span:last-child{color:#0E8FB8;font-weight:600}
+.tot{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-top:10px;padding-top:14px;border-top:1px solid var(--line);font-weight:700}
+.tot b{font-family:var(--display);font-size:32px;font-weight:600;letter-spacing:-.035em}
+.paybtn{display:block;width:100%;height:58px;margin-top:16px;border-radius:999px;background:var(--ink);color:#fff;text-align:center;font-size:17px;font-weight:700;letter-spacing:-.02em;transition:opacity .2s}
+.paybtn:disabled{opacity:.28;cursor:not-allowed}
+.small{margin-top:12px;font-size:13.5px;color:var(--ink-2);line-height:1.55}
+.small li{padding-left:12px;position:relative}
+.small li::before{content:"·";position:absolute;left:2px}
+/* 완료 화면 */
+.done{max-width:620px;margin:0 auto;padding:56px 24px 88px;text-align:center}
+.done .ok{width:68px;height:68px;margin:0 auto 22px;border-radius:50%;background:var(--sky);display:grid;place-items:center;font-size:30px;font-weight:700}
+.done h1{margin:0;font-size:clamp(30px,4vw,44px)}
+.done>p{color:var(--ink-2);margin-top:10px}
+.done .card{text-align:left;margin-top:28px}
+.done .demo{text-align:left}
+.done .acts{display:flex;justify-content:center;gap:10px;margin-top:24px;flex-wrap:wrap}
+.pill{display:inline-flex;align-items:center;height:50px;padding:0 26px;border-radius:999px;font-weight:700;text-decoration:none;font-size:15.5px}
+.pill.ink{background:var(--ink);color:#fff}
+.pill.line2{box-shadow:inset 0 0 0 1.5px var(--ink)}
+@media (max-width:900px){
+  :root{--x:16px}
+  .steps{display:none}.back{margin-left:auto}
+  h1{margin-top:22px}
+  .grid{grid-template-columns:minmax(0,1fr);padding-top:16px;padding-bottom:40px;gap:14px}
+  .sum{position:static}
+  input[readonly]{padding:0 10px}
+  .card{padding:22px 18px}
+  .cc{grid-template-columns:minmax(0,1fr)}
+  .plastic{max-width:280px}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <a class="logo" href="./" aria-label="COMMA 홈"><img src="assets/brand/logo-h.svg" alt="COMMA"></a>
+  <ol class="steps"><li id="s1">구성 선택</li><li id="s2" class="cur">결제</li><li id="s3">완료</li></ol>
+  <a class="back" href="./#buy" id="back">구성 바꾸기</a>
+</header>
+
+<main id="checkout">
+  <h1>주문하고 결제하기</h1>
+  <div class="grid">
+    <div>
+      <section class="card">
+        <h2>주문 구성 <a href="./#buy">구성 바꾸기</a></h2>
+        <ul id="items"></ul>
+      </section>
+
+      <section class="card">
+        <h2>받으시는 분</h2>
+        <div class="f">
+          <div><label for="fName">이름</label><input id="fName" value="김쉼표" readonly tabindex="-1" autocomplete="off"></div>
+          <div><label for="fTel">연락처</label><input id="fTel" value="010-0000-0000" readonly tabindex="-1" autocomplete="off"></div>
+          <div class="w"><label for="fMail">이메일</label><input id="fMail" value="comma@example.com" readonly tabindex="-1" autocomplete="off"></div>
+          <div class="w"><label for="fAddr">배송지</label><input id="fAddr" value="서울특별시 일상구 쉼표로 1, 101호" readonly tabindex="-1" autocomplete="off"></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>결제 수단</h2>
+        <div class="pay" id="pay" role="group" aria-label="결제 수단">
+          <button type="button" data-p="card" aria-pressed="true">신용·체크카드</button>
+          <button type="button" data-p="easy" aria-pressed="false">간편결제</button>
+          <button type="button" data-p="bank" aria-pressed="false">무통장입금</button>
+        </div>
+
+        <div id="pCard" class="cc">
+          <div class="plastic" aria-hidden="true">
+            <img src="assets/brand/logo-h.svg" alt="">
+            <div class="no">1234 5678 9012 3456</div>
+            <div class="ln"><span>KIM SWIMPYO</span><span>12/30</span></div>
+          </div>
+          <div>
+            <label>카드 번호</label>
+            <div class="four">
+              <input value="1234" readonly tabindex="-1" autocomplete="off" aria-label="카드 번호 1">
+              <input value="5678" readonly tabindex="-1" autocomplete="off" aria-label="카드 번호 2">
+              <input value="9012" readonly tabindex="-1" autocomplete="off" aria-label="카드 번호 3">
+              <input value="3456" readonly tabindex="-1" autocomplete="off" aria-label="카드 번호 4">
+            </div>
+            <div class="f4">
+              <div><label for="fExp">유효기간</label><input id="fExp" value="12/30" readonly tabindex="-1" autocomplete="off"></div>
+              <div><label for="fCvc">CVC</label><input id="fCvc" value="123" readonly tabindex="-1" autocomplete="off"></div>
+              <div><label for="fPw">비밀번호 앞 2자리</label><input id="fPw" value="00" readonly tabindex="-1" autocomplete="off"></div>
+            </div>
+            <div style="margin-top:12px"><label for="inst">할부</label><select id="inst"></select></div>
+          </div>
+        </div>
+        <div id="pEasy" hidden>
+          <div class="f"><div class="w"><label for="fEasy">등록된 결제 수단</label><input id="fEasy" value="체험용 간편결제 **** 3456" readonly tabindex="-1" autocomplete="off"></div></div>
+        </div>
+        <div id="pBank" hidden>
+          <div class="f"><div class="w"><label for="fBank">입금 계좌</label><input id="fBank" value="체험은행 000-000000-00-000" readonly tabindex="-1" autocomplete="off"></div></div>
+        </div>
+
+        <p class="demo">체험용 구매 화면이에요. 입력 칸은 미리 채워져 있고 고칠 수 없어요. 실제로 결제되지 않고, 어떤 정보도 전송되지 않아요.</p>
+      </section>
+    </div>
+
+    <aside class="sum">
+      <div class="ebb" id="ebb"><span><b>Early bird</b>12월 31일까지</span><span id="cd"></span></div>
+      <section class="card">
+        <h2>결제 금액</h2>
+        <div id="lines"></div>
+        <div class="tot"><span>총 결제 금액</span><b id="total"></b></div>
+        <div style="margin-top:14px">
+          <label class="chk"><input type="checkbox" id="a1">주문 내용과 금액을 확인했어요</label>
+          <label class="chk"><input type="checkbox" id="a2"><span id="a2t"></span></label>
+        </div>
+        <button class="paybtn" id="payBtn" disabled></button>
+        <ul class="small" id="small"></ul>
+      </section>
+    </aside>
+  </div>
+</main>
+
+<main id="done" class="done" hidden>
+  <div class="ok" aria-hidden="true">✓</div>
+  <h1>주문이 완료됐어요</h1>
+  <p id="doneNo"></p>
+  <section class="card">
+    <h2>주문 내역</h2>
+    <div id="doneLines"></div>
+    <div class="tot"><span>결제 금액</span><b id="doneTotal"></b></div>
+  </section>
+  <p class="demo">체험용 주문이에요. 실제 결제와 배송은 이뤄지지 않아요.</p>
+  <div class="acts"><a class="pill ink" href="./">홈으로</a><a class="pill line2" href="./#app">앱 살펴보기</a></div>
+</main>
+
+<script src="assets/shop.js"></script>
+<script>
+(function(){
+const S=window.SHOP, won=S.won, $=q=>document.querySelector(q), $$=q=>[...document.querySelectorAll(q)];
+const u=new URLSearchParams(location.search);
+const color=S.colors.find(c=>c.id===u.get('color'))||S.colors[2];
+const picked=S.mounts.filter(m=>(u.get('mounts')||'').split(',').includes(m.id));
+let qty=1;
+
+function render(){
+  const e=S.isEarly(), k=e?'early':'list', q=S.quote(picked.length,qty), all=picked.length===S.mounts.length;
+  const itemsHtml=[`<li class="item"><div class="th"><img src="${color.img}" alt=""></div><div><b>DOT ${color.n}</b><span>Core · Dock · COMMA App</span><br><span class="qty"><button type="button" id="qm" aria-label="수량 줄이기">−</button><output id="qn">${qty}</output><button type="button" id="qp" aria-label="수량 늘리기">+</button></span></div><div class="p">${e?`<s>${won(S.dot.list*qty)}</s>`:''}${won(S.dot[k]*qty)}</div></li>`];
+  if(all) itemsHtml.push(`<li class="item"><div class="th"><img src="${S.mounts[1].img}" alt=""></div><div><b>Mount 3종 세트</b><span>워치 스트랩 · 키링 · 클립</span></div><div class="p">${e?`<s>${won(S.mountSet.list*qty)}</s>`:''}${won(S.mountSet[k]*qty)}</div></li>`);
+  else picked.forEach(m=>itemsHtml.push(`<li class="item"><div class="th"><img src="${m.img}" alt=""></div><div><b>Mount ${m.n}</b><span>${m.s}</span></div><div class="p">${e?`<s>${won(S.mount.list*qty)}</s>`:''}${won(S.mount[k]*qty)}</div></li>`));
+  $('#items').innerHTML=itemsHtml.join('');
+  $('#qm').onclick=()=>{ if(qty>1){qty--;render();} };
+  $('#qp').onclick=()=>{ if(qty<3){qty++;render();} };
+
+  const lines=[['상품 금액',won(q.list)]];
+  if(q.save>0) lines.push(['얼리버드 할인','−'+won(q.save),'off']);
+  lines.push(['배송비','무료']);
+  $('#lines').innerHTML=lines.map(l=>`<div class="line ${l[2]||''}"><span>${l[0]}</span><span>${l[1]}</span></div>`).join('');
+  $('#total').textContent=won(q.pay);
+  $('#payBtn').textContent=`${won(q.pay)} 결제하기`;
+  const sel=$('#inst'), cur=sel.value||'1';
+  sel.innerHTML=[1,3,6,12].map(n=>`<option value="${n}">${n===1?'일시불':`${n}개월 (월 ${won(q.pay/n)})`}</option>`).join('');
+  sel.value=cur;
+  return q;
+}
+render();
+
+const e=S.isEarly();
+$('#ebb').hidden=!e;
+if(e){ const t=()=>{$('#cd').textContent='마감까지 '+S.left();}; t(); setInterval(t,1000); }
+$('#a2t').textContent=`${S.shipping}된다는 걸 확인했어요`;
+$('#small').innerHTML=[S.shipping,`받은 날부터 ${S.returnDays}일 안에 무료 반품`,'품질 보증 1년','앱 구독료 없음'].map(t=>`<li>${t}</li>`).join('');
+
+/* 결제 수단 */
+const panel={card:'#pCard',easy:'#pEasy',bank:'#pBank'};
+$('#pay').addEventListener('click',ev=>{ const b=ev.target.closest('button'); if(!b) return;
+  $$('#pay button').forEach(x=>x.setAttribute('aria-pressed',x===b));
+  Object.entries(panel).forEach(([k,q])=>{$(q).hidden=k!==b.dataset.p;}); });
+
+/* 동의해야 결제 버튼이 켜진다 */
+const sync=()=>{$('#payBtn').disabled=!($('#a1').checked&&$('#a2').checked);};
+$('#a1').addEventListener('change',sync); $('#a2').addEventListener('change',sync);
+
+/* 결제하기: 전송 없이 이 화면에서 완료로 넘어간다 */
+$('#payBtn').addEventListener('click',()=>{ const b=$('#payBtn'); b.disabled=true; b.textContent='결제하는 중…';
+  setTimeout(()=>{ const q=S.quote(picked.length,qty), d=new Date(), p=n=>String(n).padStart(2,'0');
+    const no=`CM${d.getFullYear()}${p(d.getMonth()+1)}${p(d.getDate())}-${String(Math.floor(Math.random()*9000)+1000)}`;
+    $('#doneNo').textContent=`주문번호 ${no}`;
+    const rows=[[`DOT ${color.n} × ${qty}`,'']].concat(picked.length===S.mounts.length?[[`Mount 3종 세트 × ${qty}`,'']]:picked.map(m=>[`Mount ${m.n} × ${qty}`,''])).concat([['배송',S.shipping]]);
+    $('#doneLines').innerHTML=rows.map(r=>`<div class="line"><span>${r[0]}</span><span>${r[1]}</span></div>`).join('');
+    $('#doneTotal').textContent=won(q.pay);
+    $('#checkout').hidden=true; $('#done').hidden=false; $('#s2').classList.remove('cur'); $('#s3').classList.add('cur'); $('#back').hidden=true; scrollTo(0,0);
+  },1100); });
+})();
+</script>
+</body>
+</html>

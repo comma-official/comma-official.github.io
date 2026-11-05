@@ -1,0 +1,811 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="쉬어야 할 때를 먼저 알아차리고, 지금 할 수 있는 작은 회복을 건네는 디바이스 DOT과 COMMA App. 일상 속 나만의 회복을 찾아가는 맞춤형 일상 회복 서비스, COMMA.">
+<meta name="theme-color" content="#72DCFF">
+<meta property="og:type" content="website">
+<meta property="og:title" content="COMMA — A small break for your everyday flow.">
+<meta property="og:description" content="쉬어야 할 때를 먼저 알아차리고, 지금 할 수 있는 작은 회복을 건네는 디바이스 DOT과 COMMA App. 일상 속 나만의 회복을 찾아가는 맞춤형 일상 회복 서비스, COMMA.">
+<meta property="og:image" content="https://comma-official.github.io/assets/og.jpg">
+<meta property="og:url" content="https://comma-official.github.io/">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="apple-touch-icon" href="assets/img/touch-icon.png">
+<title>COMMA</title>
+<style>
+@font-face{font-family:"Instrument Sans";src:url(assets/fonts/InstrumentSans-Variable.woff2) format("woff2");font-weight:400 700;font-display:swap}
+@font-face{font-family:"Instrument Serif";src:url(assets/fonts/InstrumentSerif-Italic.woff2) format("woff2");font-style:italic;font-weight:400;font-display:swap}
+@font-face{font-family:"Wanted Sans";src:url(assets/fonts/WantedSans-Variable-kr.woff2) format("woff2");font-weight:400 1000;font-display:swap}
+
+/* 흐름: 내 하루에 공감(About) → 나에게 맞는 쉼 확인 → 브랜드가 지향하는 것(Vision) → 쓰는 법(How) → 제품(DOT·App) → 구매(Buy).
+   화면: 브랜드 단색 면을 폭 전체로 가끔 쓰고, 큰 한글 제목과 여백으로 끌고 간다. 사진은 모서리 없이, 둥근 것은 기기와 버튼뿐. */
+:root{
+  --paper:#FFFFFF;--ink:#282828;--ink-2:#596068;--line:#E3E9ED;--mist:#F2F6F8;
+  --sky:#72DCFF;--sky-edge:#23DAFF;--mint:#7BFFC8;--yellow:#EAFE45;
+  --grad:linear-gradient(100deg,#AFEBFF 0%,#A8FFDB 52%,#F7FFB1 100%);
+  --display:"Instrument Sans","Wanted Sans","Apple SD Gothic Neo",system-ui,sans-serif;
+  --serif:"Instrument Serif","Times New Roman",serif;
+  --body:"Wanted Sans","Apple SD Gothic Neo","Noto Sans KR",system-ui,sans-serif;
+  --x:max(24px,calc((100vw - 1320px)/2));
+  --nav:68px;
+  --gap:clamp(96px,11vw,176px);
+  --ease:cubic-bezier(.65,0,.35,1);
+  --spring:cubic-bezier(.34,1.45,.5,1);
+  color-scheme:light;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:18px;line-height:1.7;word-break:keep-all;overflow-wrap:break-word;-webkit-font-smoothing:antialiased;overflow-x:clip}
+h1,h2,h3,h4,p,ul,ol,figure{margin:0;padding:0}
+ul,ol{list-style:none}
+img,video{display:block;max-width:100%}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;text-align:inherit;touch-action:manipulation}
+a{color:inherit}
+:focus-visible{outline:3px solid #1C9FD0;outline-offset:3px}
+section{scroll-margin-top:var(--nav)}
+.x{padding-inline:var(--x)}
+h2{font-size:clamp(31px,4.3vw,64px);line-height:1.22;font-weight:700;letter-spacing:-.035em;text-wrap:balance}
+h3{font-size:clamp(25px,2.6vw,38px);line-height:1.32;font-weight:700;letter-spacing:-.03em;text-wrap:balance}
+.lead{font-size:clamp(17px,1.45vw,21px);line-height:1.75;color:var(--ink-2);max-width:37em;margin-top:clamp(18px,2vw,28px);text-wrap:pretty}
+
+.pill{display:inline-flex;align-items:center;justify-content:center;height:44px;padding:0 22px;border-radius:999px;font-size:15px;font-weight:700;text-decoration:none;white-space:nowrap;flex:none;transition:transform .25s,background .25s,color .25s}
+.pill:hover{transform:translateY(-2px)}
+.pill.ink{background:var(--ink);color:#fff}
+.pill.line{box-shadow:inset 0 0 0 1.5px var(--ink)}
+.pill.lg{height:56px;padding:0 30px;font-size:17px}
+
+/* 머리글 */
+.nav{position:fixed;inset:0 0 auto;z-index:60;height:var(--nav);display:flex;align-items:center;gap:24px;padding-inline:var(--x);transition:background .3s,box-shadow .3s}
+.nav.solid{background:rgba(255,255,255,.94);box-shadow:0 1px 0 var(--line)}
+.logo{display:block;flex:none}
+.logo img{height:24px;width:auto;filter:brightness(0) opacity(.86);transition:filter .3s}
+.nav.solid .logo img{filter:none}
+.links{display:flex;gap:30px;margin:0 auto}
+.links a{font-family:var(--display);font-size:15px;font-weight:500;text-decoration:none;padding:6px 0;white-space:nowrap;color:rgba(40,40,40,.74);transition:color .25s,box-shadow .25s}
+.links a:hover{color:var(--ink)}
+.links a.on{color:var(--ink);box-shadow:inset 0 -2px 0 var(--ink)}
+.links .ext{position:relative;margin-left:6px;padding-left:30px}
+.links .ext::before{content:"";position:absolute;left:0;top:50%;width:1px;height:18px;margin-top:-9px;background:rgba(40,40,40,.28)}
+.burger{display:none;margin-left:auto;width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.7)}
+.nav.solid .burger{background:var(--mist)}
+.burger i{display:block;width:16px;height:1.5px;background:var(--ink);margin:4px auto}
+.bar{position:absolute;left:0;bottom:-1px;width:100%;height:2px;background:var(--sky-edge);transform-origin:0 50%;transform:scaleX(0)}
+.sheet{position:fixed;inset:0;z-index:65;background:var(--paper);padding:84px 24px 24px;display:flex;flex-direction:column;overflow-y:auto}
+.sheet[hidden]{display:none}
+.sheet a:not(.pill){font-family:var(--display);font-weight:600;font-size:38px;line-height:1.15;letter-spacing:-.04em;text-decoration:none;padding:12px 0;border-bottom:1px solid var(--line)}
+.sheet a span{font-family:var(--body);font-size:14px;font-weight:600;letter-spacing:0;color:var(--ink-2);margin-left:10px}
+.sheet .pill{margin-top:28px;align-self:flex-start}
+.sheet .close{position:absolute;top:13px;right:16px;width:42px;height:42px;border-radius:50%;background:var(--mist);font-size:20px;text-align:center}
+
+/* 히어로 */
+.hero{position:relative;min-height:max(100svh,640px);background:var(--sky);overflow:hidden;padding-top:calc(var(--nav) + clamp(16px,3vh,40px))}
+.slogan{font-family:var(--display);font-weight:600;font-size:clamp(50px,7.7vw,148px);line-height:1;letter-spacing:-.05em}
+.slogan i{font-family:var(--serif);font-weight:400;font-style:italic;letter-spacing:-.03em;padding-right:.03em}
+.hero-foot{position:absolute;left:var(--x);bottom:clamp(32px,6vh,64px);width:310px}
+.hero-sub{text-wrap:balance;font-size:clamp(18px,1.35vw,20px);line-height:1.55;font-weight:700;letter-spacing:-.02em}
+.hero-eb{margin-top:18px;font-size:16px;font-weight:600}
+.hero-eb b{font-family:var(--display);font-size:22px;font-weight:600;letter-spacing:-.02em;margin-right:6px}
+.hero-eb s{opacity:.6;font-family:var(--display)}
+.hero-cta{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.lineup{--lh:min(58svh,calc((100vw - var(--x)*2 - 350px)/1.77));position:absolute;right:calc(var(--x) - 8px);bottom:0;height:var(--lh);display:flex;align-items:flex-end}
+.lineup a{display:block;flex:none;margin-left:calc(var(--lh)*-.03);animation:rise .9s var(--spring) both;transition:transform .45s var(--spring)}
+.lineup a:hover{transform:translateY(-14px)}
+.lineup a:nth-child(2){animation-delay:.08s}.lineup a:nth-child(3){animation-delay:.16s}.lineup a:nth-child(4){animation-delay:.24s}
+.lineup img{width:100%;height:100%;object-fit:contain}
+@keyframes rise{from{transform:translateY(42%);opacity:0}to{transform:none;opacity:1}}
+
+/* 하루 */
+.day{position:relative}
+.stk{position:sticky;top:0;height:100svh;display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);background:var(--paper)}
+.stk .tx{align-self:center;padding:var(--nav) clamp(24px,4vw,72px) 0 var(--x);display:grid;gap:28px}
+.prog{display:flex;gap:6px}
+.prog i{flex:1;height:3px;background:var(--line);transition:background .4s var(--ease)}
+.prog i.f{background:var(--ink)}
+.dcap{font-size:clamp(26px,3vw,44px);line-height:1.36;font-weight:700;letter-spacing:-.035em;min-height:5.6em;text-wrap:balance;transition:opacity .35s var(--ease)}
+.dcap.out{opacity:0}
+.stk .ph{position:relative;overflow:hidden;background:var(--ink)}
+.stk .ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transform:scale(1.06);transition:opacity .9s var(--ease),transform 1.8s var(--ease)}
+.stk .ph img.on{opacity:1;transform:none}
+
+/* 정의 + DOT·App */
+.intro{padding-top:var(--gap)}
+.intro h2{max-width:17em}
+.duo{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);margin-top:clamp(48px,6vw,88px)}
+.duo figure{display:flex;flex-direction:column}
+.duo .im{height:clamp(340px,44vw,680px);overflow:hidden;background:var(--mist)}
+.duo .im img{width:100%;height:100%;object-fit:cover}
+.duo .app .im{display:flex;justify-content:center;padding-top:clamp(28px,4vw,64px)}
+.duo .app img{width:auto;height:auto;max-width:min(66%,360px);object-fit:contain;object-position:50% 0;align-self:flex-start;border-radius:28px 28px 0 0;box-shadow:0 0 0 1px var(--line)}
+.duo figcaption{padding:24px var(--x) 0 var(--x);display:grid;gap:4px}
+.duo .app figcaption{padding-left:clamp(24px,3vw,48px)}
+.duo b{font-family:var(--display);font-weight:600;font-size:clamp(26px,2.4vw,36px);letter-spacing:-.035em}
+.duo span{color:var(--ink-2);font-size:17px;line-height:1.6;max-width:30em}
+
+/* 나의 하루 */
+.who{padding-top:var(--gap)}
+.seg{position:relative;display:inline-flex;max-width:100%;background:var(--mist);border-radius:31px;padding:5px;overflow-x:auto;scrollbar-width:none}
+.seg::-webkit-scrollbar{display:none}
+.seg button{position:relative;z-index:1;height:50px;padding:0 22px;border-radius:25px;font-weight:700;font-size:16.5px;color:var(--ink-2);white-space:nowrap;flex:none;transition:color .35s var(--ease)}
+.seg button.cur{color:#fff}
+.seg .th{position:absolute;top:5px;left:0;height:50px;width:0;border-radius:25px;background:var(--ink);transition:transform .45s var(--ease),width .45s var(--ease)}
+.who .seg{margin-top:clamp(28px,3vw,44px)}
+.who-g{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,4fr) minmax(0,3.6fr);gap:clamp(24px,3vw,48px);margin-top:clamp(36px,4vw,60px);align-items:stretch}
+.pain{font-size:clamp(25px,2.5vw,36px);line-height:1.36;font-weight:700;letter-spacing:-.03em;text-wrap:balance}
+.after{color:var(--ink-2);margin-top:20px;font-size:17.5px;line-height:1.75;text-wrap:pretty}
+.inp{display:grid;gap:0;border-top:1.5px solid var(--ink);align-content:start}
+.inp li{display:grid;grid-template-columns:20px 1fr;gap:14px;align-items:start;padding:18px 0;border-bottom:1px solid var(--line);opacity:.34;transition:opacity .4s var(--ease)}
+.inp li i{width:14px;height:14px;margin-top:7px;border-radius:50%;background:var(--line);transition:background .4s var(--ease),transform .4s var(--spring)}
+.inp li b{display:block;font-size:18px;letter-spacing:-.02em;line-height:1.45}
+.inp li span{font-size:14.5px;color:var(--ink-2);font-weight:600;line-height:1.45}
+.inp li.on{opacity:1}
+.inp li.on i{background:var(--sky-edge);transform:scale(1.15)}
+.rec{position:relative;background:var(--ink);color:#fff;border-radius:32px;padding:28px 28px 30px;display:flex;flex-direction:column;gap:12px;min-height:400px;overflow:hidden}
+.rec small{font-size:15px;color:var(--sky);font-weight:800}
+.rec b{font-size:clamp(25px,2.1vw,31px);line-height:1.3;letter-spacing:-.04em}
+.rec p{font-size:15.5px;line-height:1.6;opacity:.8}
+.rec .scr{margin:auto auto 0;width:min(100%,204px);aspect-ratio:1;border-radius:50%;background:#000;box-shadow:0 0 0 9px #4A4E52;overflow:hidden;flex:none}
+.rec .scr img{width:100%;height:100%;object-fit:cover}
+.fade{transition:opacity .28s var(--ease)}
+.fade.out{opacity:0}
+.who-cta{margin-top:clamp(32px,4vw,52px)}
+
+/* Vision */
+.vision{margin-top:var(--gap);background:var(--mint);padding-block:clamp(88px,10vw,152px)}
+.vision h2{max-width:16em}
+.vals{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(24px,3vw,48px);margin-top:clamp(52px,6vw,96px)}
+.vals li{border-top:2px solid var(--ink);padding-top:18px}
+.vals b{display:block;font-family:var(--serif);font-style:italic;font-weight:400;font-size:clamp(38px,4.4vw,70px);letter-spacing:-.02em;line-height:1.05}
+.vals span{display:block;margin-top:12px;font-size:17.5px;line-height:1.6;max-width:22em}
+
+/* 네 가지 회복 자원: 자원에 부여된 색은 없다. Core 화면의 심볼만 바뀐다 */
+.res{background:var(--paper);padding-top:var(--gap)}
+.res-in{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:32px;align-items:center}
+.res-btn{display:flex;gap:10px;flex-wrap:wrap;margin-top:clamp(28px,3vw,44px)}
+.res-btn button{display:flex;align-items:center;gap:10px;height:60px;padding:0 24px 0 12px;border-radius:30px;background:var(--mist);font-weight:700;font-size:18px;letter-spacing:-.02em;transition:background .3s,color .3s}
+.res-btn button img{width:36px;height:36px;transition:filter .3s}
+.res-btn button.cur{background:var(--ink);color:#fff}
+.res-btn button.cur img{filter:invert(1)}
+.res-out{margin-top:clamp(28px,3vw,44px);min-height:196px}
+.res-out p{font-size:clamp(20px,1.9vw,27px);line-height:1.45;font-weight:600;letter-spacing:-.025em;max-width:24em;text-wrap:balance}
+.res-out p.ex{font-size:17.5px;font-weight:500;letter-spacing:-.01em;color:var(--ink-2);margin-top:12px}
+.res-out p.ex b{color:var(--ink);font-weight:700}
+.res-out .pill{margin-top:22px}
+.res-core{justify-self:center;width:min(100%,430px)}
+
+/* How */
+.how{padding-top:var(--gap)}
+.how-g{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(32px,5vw,88px);align-items:center;margin-top:clamp(44px,5vw,76px)}
+.jg{display:grid;grid-template-columns:1fr 1fr;gap:clamp(12px,1.6vw,22px);max-width:500px}
+.jd{aspect-ratio:1;border-radius:50%;background:var(--mist);display:grid;place-items:center;text-align:center;transition:background .45s var(--ease),transform .45s var(--spring)}
+.jd:nth-child(2){border-radius:50% 50% 12% 50%}
+.jd.cur{background:var(--sky);transform:scale(1.04)}
+.jd b{display:block;font-family:var(--display);font-weight:500;font-size:15px;color:var(--ink-2)}
+.jd.cur b{color:var(--ink)}
+.jd span{font-weight:800;font-size:clamp(16px,1.5vw,21px);line-height:1.3;letter-spacing:-.03em}
+.jph{position:relative;aspect-ratio:16/10;overflow:hidden;background:var(--mist)}
+.jph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transform:scale(1.04);transition:opacity .7s var(--ease),transform 1.2s var(--ease)}
+.jph img.ct{object-fit:contain;object-position:50% 12%;padding-top:20px}
+.jph img.on{opacity:1;transform:none}
+.jt{margin-top:22px;min-height:96px}
+.jt p{color:var(--ink-2);margin-top:6px;font-size:18px}
+
+/* DOT */
+.dot{margin-top:var(--gap)}
+.pfilm{position:relative;background:#fff;aspect-ratio:16/9;max-height:100svh;width:100%;overflow:hidden;border-block:1px solid var(--line)}
+.pfilm video{width:100%;height:100%;object-fit:cover}
+.pfilm .pill{position:absolute;right:var(--x);bottom:28px;background:rgba(255,255,255,.94);box-shadow:inset 0 0 0 1px var(--line)}
+.dot-h{padding-top:clamp(64px,7vw,112px)}
+.core{display:grid;grid-template-columns:minmax(0,420px) minmax(0,1fr);gap:clamp(32px,6vw,104px);align-items:center;margin-top:clamp(52px,6vw,88px)}
+.bezel{position:relative;display:block;width:100%;max-width:420px;aspect-ratio:1;border-radius:50%;background:#DADFE3;padding:5%;box-shadow:inset 0 0 0 8px #EEF1F3}
+.bezel .scr{position:relative;display:block;width:100%;height:100%;border-radius:50%;overflow:hidden;background:#0B0B0C}
+.bezel img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transform:scale(1.08);transition:opacity .5s var(--ease),transform .7s var(--ease)}
+.bezel img.on{opacity:1;transform:none}
+.core .now{font-size:clamp(22px,2.2vw,32px);line-height:1.42;font-weight:800;letter-spacing:-.03em;min-height:2.9em;margin-top:18px;text-wrap:balance}
+.ctl{display:flex;align-items:center;gap:12px;margin-top:22px}
+.ib{width:50px;height:50px;border-radius:50%;background:var(--mist);display:grid;place-items:center;flex:none}
+.ib svg{width:22px;height:22px}
+.dots{display:flex;gap:7px;margin-left:8px}
+.dots i{width:8px;height:8px;border-radius:50%;background:var(--line);transition:all .35s var(--ease)}
+.dots i.cur{background:var(--ink);width:24px;border-radius:4px}
+.full{margin-top:var(--gap);height:min(100svh,62vw);overflow:hidden}
+.full img{width:100%;height:100%;object-fit:cover}
+.rv img{transform:scale(1.06);transition:transform 1.4s var(--ease)}
+.rv.in img{transform:none}
+.use{padding-top:var(--gap)}
+.use .seg{margin-top:clamp(24px,3vw,36px)}
+.use-ph{position:relative;aspect-ratio:16/9;overflow:hidden;margin-top:24px;background:var(--mist)}
+.use-ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .6s var(--ease)}
+.use-ph img.on{opacity:1}
+.use-cap{margin-top:16px;font-size:clamp(19px,1.7vw,24px);font-weight:700;letter-spacing:-.025em}
+.pair{display:grid;grid-template-columns:minmax(0,6fr) minmax(0,5fr);gap:clamp(32px,5vw,88px);align-items:center;padding-top:var(--gap)}
+.pair .ph{aspect-ratio:3/2;overflow:hidden}
+.pair img{width:100%;height:100%;object-fit:cover}
+
+/* App */
+.app{margin-top:var(--gap);background:var(--mist);padding-block:clamp(80px,9vw,136px)}
+.appx{display:grid;grid-template-columns:minmax(0,370px) minmax(0,1fr);gap:clamp(40px,7vw,120px);align-items:center;margin-top:clamp(44px,5vw,72px)}
+.phone{position:relative;width:100%;max-width:370px;aspect-ratio:400/868;border-radius:58px;background:#141416;padding:12px;box-shadow:inset 0 0 0 2px #2A2A2E;justify-self:center}
+.phone .scr{position:relative;width:100%;height:100%;border-radius:47px;overflow:hidden;background:#fff}
+.phone .scr img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 0;transform:translateX(100%);transition:transform .55s var(--ease)}
+.phone .scr img.on{transform:none}
+.phone .scr img.out{transform:translateX(-28%)}
+.phone .isl{position:absolute;top:24px;left:50%;width:30%;height:30px;transform:translateX(-50%);border-radius:15px;background:#000;z-index:3}
+.tabs{border-top:1.5px solid var(--ink)}
+.tabs button{display:grid;grid-template-columns:clamp(100px,11vw,160px) 1fr;gap:16px;align-items:baseline;width:100%;padding:20px 0;border-bottom:1px solid #D9E1E6;text-align:left;opacity:.45;transition:opacity .3s}
+.tabs button.cur{opacity:1}
+.tabs b{font-family:var(--display);font-weight:600;font-size:clamp(20px,1.8vw,26px);letter-spacing:-.02em}
+.tabs span{font-size:clamp(16px,1.3vw,19px);font-weight:800;letter-spacing:-.02em}
+.desc{margin-top:24px;font-size:17.5px;line-height:1.75;color:var(--ink-2);min-height:6em;text-wrap:pretty}
+
+/* 구매 */
+.eb{background:var(--ink);color:#fff;margin-top:0}
+.eb-in{display:flex;justify-content:space-between;align-items:center;gap:8px 28px;flex-wrap:wrap;padding-block:18px;font-size:16px;font-weight:600}
+.eb-in b{font-family:var(--serif);font-style:italic;font-weight:400;font-size:27px;letter-spacing:-.01em;margin-right:10px;color:var(--sky)}
+.eb-cd{font-family:var(--display);font-variant-numeric:tabular-nums;font-weight:600;letter-spacing:-.01em}
+.buy-g{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:start}
+.stage{position:sticky;top:var(--nav);height:calc(100svh - var(--nav));overflow:hidden;background:#E7FBF5;transition:background .5s var(--ease)}
+.stage img{position:absolute;left:50%;bottom:13%;height:min(74%,66vw);width:auto;max-width:none;opacity:0;transform:translate(-50%,28px) scale(.96);transition:opacity .4s var(--ease),transform .65s var(--spring)}
+.stage img.on{opacity:1;transform:translate(-50%,0)}
+.opt{padding:clamp(36px,4vw,60px) var(--x) clamp(40px,4vw,64px) clamp(24px,5vw,88px)}
+.pr{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 12px;margin-top:14px;font-family:var(--display)}
+.pr b{font-size:clamp(34px,3.2vw,46px);font-weight:600;letter-spacing:-.04em;line-height:1.1}
+.pr s{font-size:19px;color:var(--ink-2)}
+.pr em{font-style:normal;font-size:15px;font-weight:700;background:var(--yellow);border-radius:999px;padding:3px 11px}
+.pday{margin-top:8px;color:var(--ink-2);font-size:16px}
+.opt h4{font-size:17px;font-weight:700;letter-spacing:-.02em;margin-top:clamp(22px,2.2vw,30px)}
+.opt h4 span{font-weight:500;color:var(--ink-2);margin-left:6px;font-size:15px}
+.colors{display:flex;gap:12px;margin-top:12px}
+.colors button{width:50px;height:50px;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(0,0,0,.06);transition:transform .35s var(--spring),box-shadow .3s}
+.colors button.cur{box-shadow:0 0 0 3px #fff,0 0 0 5px var(--ink);transform:scale(1.04)}
+.cname{margin-top:10px;font-size:16px;font-weight:600}
+.mounts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:12px}
+.mounts button{position:relative;border-radius:18px;padding:8px 8px 12px;text-align:center;box-shadow:inset 0 0 0 1.5px var(--line);transition:box-shadow .3s}
+.mounts button.cur{box-shadow:inset 0 0 0 2px var(--ink)}
+.mounts button.cur::after{content:"✓";position:absolute;top:8px;right:8px;width:22px;height:22px;border-radius:50%;background:var(--ink);color:#fff;font-size:13px;line-height:22px;text-align:center}
+.mounts img{width:100%;aspect-ratio:16/10;object-fit:contain;mix-blend-mode:multiply}
+.mounts b{display:block;font-size:15.5px;letter-spacing:-.02em;line-height:1.3;margin-top:4px;font-weight:700}
+.mounts span{display:block;font-size:13.5px;color:var(--ink-2);font-weight:500;line-height:1.35}
+.mall{display:flex;justify-content:space-between;align-items:center;gap:12px;width:100%;margin-top:10px;padding:13px 16px;border-radius:14px;background:var(--mist);font-size:15.5px;font-weight:700;letter-spacing:-.02em;transition:background .3s,color .3s}
+.mall.cur{background:var(--ink);color:#fff}
+.mall span{font-family:var(--display);font-weight:600}
+.mall s{opacity:.55;font-weight:500;margin-right:6px}
+.perks{margin-top:clamp(18px,2vw,26px);border-top:1px solid var(--line);padding-top:14px;display:grid;gap:5px;font-size:15.5px}
+.perks li{padding-left:18px;position:relative;line-height:1.5}
+.perks li::before{content:"";position:absolute;left:0;top:.62em;width:8px;height:8px;border-radius:50%;background:var(--sky-edge)}
+.total{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-top:18px;padding-top:14px;border-top:1px solid var(--line)}
+.total span{font-weight:700}
+.total b{font-family:var(--display);font-size:30px;font-weight:600;letter-spacing:-.035em}
+.saved{text-align:right;font-size:15px;font-weight:700;color:#0E8FB8;min-height:1.4em}
+.buy-btn{width:100%;margin-top:12px}
+.opt .note{margin-top:10px;font-size:14px;color:var(--ink-2);text-align:center}
+.faq{padding-top:var(--gap)}
+[hidden]{display:none!important}
+.faq-tabs{display:flex;gap:6px;margin-top:clamp(24px,3vw,36px)}
+.faq-tabs button{padding:10px 18px;border-radius:999px;font-weight:700;font-size:15.5px;background:var(--mist);transition:background .25s,color .25s}
+.faq-tabs button[aria-selected=true]{background:var(--ink);color:#fff}
+.faq-l{margin-top:clamp(16px,2vw,24px);border-top:1.5px solid var(--ink)}
+.faq details{border-bottom:1px solid var(--line)}
+.faq summary{display:flex;justify-content:space-between;gap:20px;padding:22px 0;font-size:clamp(18px,1.6vw,22px);font-weight:800;letter-spacing:-.025em;line-height:1.4;cursor:pointer;list-style:none}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";font-family:var(--display);font-weight:400;font-size:26px;line-height:1.1;transition:transform .3s var(--ease)}
+.faq details[open] summary::after{transform:rotate(45deg)}
+.faq details p{padding:0 40px 24px 0;color:var(--ink-2);max-width:44em;text-wrap:pretty}
+
+/* 마무리 */
+.end{margin-top:var(--gap);background:var(--sky);overflow:hidden;padding-top:clamp(72px,8vw,120px)}
+.end-top{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap}
+.end-cta{display:flex;align-items:center;gap:18px;flex-wrap:wrap;font-weight:600}
+.giant{display:block;width:calc(100vw - var(--x)*2);height:auto;margin:clamp(40px,6vw,88px) var(--x) clamp(24px,3vw,44px);filter:brightness(0) opacity(.86)}
+footer{background:var(--ink);color:rgba(255,255,255,.72);padding-block:36px calc(32px + env(safe-area-inset-bottom,0px));font-size:13.5px}
+footer .row{display:flex;justify-content:space-between;gap:12px 32px;flex-wrap:wrap}
+footer b{color:#fff;font-weight:700}
+
+/* 영상·주문 창 */
+dialog{border:0;padding:0;color:inherit}
+dialog::backdrop{background:rgba(10,10,12,.72)}
+#player{width:100vw;height:100dvh;max-width:none;max-height:none;background:#000}
+#player[open]{display:grid;place-items:center}
+#player video{width:100%;height:100%;object-fit:contain}
+#player .x-btn{position:absolute;top:16px;right:16px;width:48px;height:48px;border-radius:50%;background:#fff;color:var(--ink);font-size:22px;text-align:center;z-index:2}
+
+@media (max-width:1080px){
+  .links{gap:20px}
+  .who-g{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .who-l{grid-column:1/-1}
+}
+@media (max-width:860px){
+  :root{--nav:60px;--x:20px}
+  body{font-size:17px}
+  .links,.nav>.pill{display:none}
+  .burger{display:block}
+  .logo img{height:22px}
+  .hero{display:flex;flex-direction:column;padding-top:calc(var(--nav) + 24px)}
+  .slogan{font-size:clamp(46px,14.6vw,92px)}
+  .slogan br{display:none}
+  .hero-foot{position:static;padding:22px var(--x) 0;width:auto}
+  .lineup{--lh:min(54vw,44svh);position:static;margin:auto auto 0;justify-content:center;width:100%;padding-top:24px;box-sizing:content-box}
+  .stk{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,56fr) minmax(0,44fr)}
+  .stk .ph{order:-1}
+  .stk .tx{padding:20px var(--x) 0;align-self:start;gap:18px}
+  .dcap{min-height:0;font-size:clamp(24px,6.6vw,34px)}
+  .duo,.who-g,.vals,.res-in,.how-g,.core,.pair,.appx,.buy-g{grid-template-columns:minmax(0,1fr)}
+  .duo .im{height:92vw}
+  .duo .app{margin-top:40px}
+  .duo .app figcaption{padding-left:var(--x)}
+  .rec{min-height:360px}
+  .res-core{width:min(82%,330px)}
+  .res-btn button{height:52px;padding:0 18px 0 10px;font-size:16px}
+  .res-btn button img{width:30px;height:30px}
+  .res-out{min-height:0}
+  .eb-in{font-size:14.5px;padding-block:14px}
+  .eb-in b{font-size:23px}
+  .jg{max-width:none}
+  .jph{aspect-ratio:4/3}
+  .bezel{max-width:320px;margin:0 auto}
+  .full{height:92vw}
+  .use-ph{aspect-ratio:4/3}
+  .pair .ph{order:-1}
+  .pfilm{aspect-ratio:4/3}
+  .pfilm .pill{bottom:14px}
+  .phone{max-width:300px;border-radius:50px}
+  .phone .scr{border-radius:40px}
+  .tabs button{grid-template-columns:116px 1fr;padding:15px 0}
+  .stage{position:relative;top:auto;height:104vw}
+  .stage img{height:82%;bottom:8%}
+  .opt{padding:36px var(--x) 8px}
+  .faq details p{padding-right:0}
+  .pill.lg{height:52px;padding:0 24px;font-size:16px}
+  footer .row{flex-direction:column}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation:none!important;transition-duration:.01ms!important}
+}
+</style>
+</head>
+<body>
+
+<header class="nav" id="nav">
+  <a class="logo" href="#top" aria-label="COMMA 맨 위로"><img src="assets/brand/logo-h.svg" alt="COMMA"></a>
+  <nav class="links" aria-label="주요 메뉴">
+    <a href="#about">About</a><a href="#vision">Vision</a><a href="#how">How it works</a><a href="#dot">DOT</a><a href="#app">App</a><a href="#buy">Buy</a><a class="ext" href="research.html" target="_blank" rel="noopener" title="새 탭에서 열려요">Research <span aria-hidden="true">↗</span></a>
+  </nav>
+  <a class="pill ink" href="#buy">구매하기</a>
+  <button class="burger" id="burger" aria-label="메뉴 열기" aria-expanded="false" aria-controls="sheet"><i></i><i></i></button>
+  <span class="bar" id="bar"></span>
+</header>
+
+<div class="sheet" id="sheet" hidden>
+  <button class="close" id="sheetClose" aria-label="메뉴 닫기">×</button>
+  <a href="#about">About<span>COMMA 소개</span></a>
+  <a href="#vision">Vision<span>비전 · 회복 자원</span></a>
+  <a href="#how">How it works<span>이용 흐름</span></a>
+  <a href="#dot">DOT<span>디바이스</span></a>
+  <a href="#app">App<span>COMMA App</span></a>
+  <a href="#buy">Buy<span>구성 · 자주 묻는 질문</span></a>
+  <a class="ext" href="research.html" target="_blank" rel="noopener">Research ↗<span>리서치 과정</span></a>
+  <a class="pill ink lg" href="#buy">구매하기</a>
+</div>
+
+<main>
+
+<section class="hero" id="top">
+  <div class="x"><h1 class="slogan">A small <i>break</i> for <br>your everyday <i>flow.</i></h1></div>
+  <div class="hero-foot">
+    <p class="hero-sub">쉬어야 할 때를 먼저 알아차리고, 지금 할 수 있는 작은 회복을 건네는 디바이스와 앱</p>
+    <p class="hero-eb" id="heroEb"></p>
+    <div class="hero-cta">
+      <a class="pill ink lg" href="#buy">구매하기</a>
+      <button class="pill line lg" data-film="assets/video/brandfilm.mp4">브랜드 필름 보기</button>
+    </div>
+  </div>
+  <div class="lineup" id="lineup"></div>
+</section>
+
+<!-- About: 내 하루에 공감 → COMMA 정의 → 나에게 맞는 쉼 -->
+<section id="about">
+  <div class="day" id="day"><div class="stk">
+    <div class="tx"><div class="prog" id="dayProg"></div><p class="dcap" id="dayCap"></p></div>
+    <div class="ph" id="dayPh"></div>
+  </div></div>
+
+  <div class="intro x">
+    <h2>COMMA는 오늘의 나에게 필요한 회복을 먼저 알아봐요.</h2>
+    <p class="lead">무엇이 부족한지 몰라도, 뭘 해야 할지 직접 찾아 나서지 않아도 괜찮아요. 일상과 상태를 살피고, 지금의 생활과 에너지로 부담 없이 시작할 수 있는 활동을 건네요.</p>
+  </div>
+  <div class="duo">
+    <figure>
+      <div class="im rv"><img src="assets/v3/dot-teal-desk-closeup.webp" alt="책상 위에서 회복을 안내하는 DOT" loading="lazy"></div>
+      <figcaption><b>DOT</b><span>책상 위에, 손목과 가방에 함께 머물며 내 상태를 살피고 회복의 순간을 남겨요.</span></figcaption>
+    </figure>
+    <figure class="app">
+      <div class="im"><img src="assets/v3/app-home-status.webp" alt="네 가지 회복 자원을 보여 주는 COMMA 앱 홈" loading="lazy"></div>
+      <figcaption><b>COMMA App</b><span>회복 추천부터 일정 연계, 기록과 탐색까지 한곳에서 이어져요.</span></figcaption>
+    </figure>
+  </div>
+
+  <div class="who x">
+    <h2>나의 하루는<br>어디에 가까운가요?</h2>
+    <p class="lead">하루를 골라 보세요. COMMA가 무엇을 살피고, 어떤 쉼을 건네는지 보여 드릴게요.</p>
+    <div class="seg" id="segWho" role="group" aria-label="나의 하루 고르기"><span class="th"></span></div>
+    <div class="who-g">
+      <div class="who-l fade" id="whoL"><p class="pain" id="whoPain"></p><p class="after" id="whoAfter"></p></div>
+      <ul class="inp" id="inp" aria-label="COMMA가 살피는 것">
+        <li data-k="state"><i></i><div><b>지금의 회복 상태</b><span>신체·정서·여가·관계 자원</span></div></li>
+        <li data-k="time"><i></i><div><b>일정과 남은 시간</b><span>오늘 일정 사이의 여유</span></div></li>
+        <li data-k="place"><i></i><div><b>지금 있는 곳</b><span>위치와 주변에서 들를 수 있는 장소</span></div></li>
+        <li data-k="log"><i></i><div><b>지난 회복 기록</b><span>전에 해 보고 좋았던 활동</span></div></li>
+      </ul>
+      <div class="rec fade" id="rec" aria-live="polite"></div>
+    </div>
+    <div class="who-cta"><a class="pill ink lg" href="#buy">나의 DOT 고르기</a></div>
+  </div>
+</section>
+
+<!-- Vision: 브랜드가 지향하는 것 + 네 가지 회복 자원 -->
+<section id="vision">
+  <div class="vision"><div class="x">
+    <h2>하루에 자연스럽게 녹아들어, 나의 균형을 함께 챙기는 존재가 되려고 해요.</h2>
+    <p class="lead" style="color:var(--ink)">회복의 모습은 사람마다 달라요. 누군가에게는 혼자 보내는 조용한 시간이, 누군가에게는 좋아하는 활동이나 소중한 사람과의 만남이 회복이 되니까요.</p>
+    <ul class="vals">
+      <li><b>Detect</b><span>회복 자원이 흔들리는 신호를 먼저 알아차려요.</span></li>
+      <li><b>Reconstruct</b><span>회복 행동으로 비어 있는 자원을 다시 채워요.</span></li>
+      <li><b>Connect</b><span>나에게 맞는 회복으로 일상을 이어가요.</span></li>
+    </ul>
+  </div></div>
+
+  <div class="res" id="res">
+    <div class="res-in x">
+      <div>
+        <h2>요즘 어떤 쪽이<br>가장 비어 있나요?</h2>
+        <div class="res-btn" id="resBtn"></div>
+        <div class="res-out fade" id="resOut"></div>
+      </div>
+      <div class="res-core" aria-hidden="true"><div class="bezel"><span class="scr" id="resScr"></span></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="how x" id="how">
+  <h2>작은 회복이 다음 회복으로<br>이어지는 네 걸음</h2>
+  <div class="how-g">
+    <div class="jg" id="jg">
+      <button class="jd" data-j="0"><span><b>01</b>알아차리기</span></button>
+      <button class="jd" data-j="1"><span><b>02</b>발견하고<br>실천하기</span></button>
+      <button class="jd" data-j="3"><span><b>04</b>다시<br>발견하기</span></button>
+      <button class="jd" data-j="2"><span><b>03</b>기록하기</span></button>
+    </div>
+    <div><div class="jph" id="jph"></div><div class="jt fade" id="jt"></div></div>
+  </div>
+</section>
+
+<section class="dot" id="dot">
+  <div class="pfilm">
+    <video id="pfilm" src="assets/video/dot-film.mp4" poster="assets/v3/render/dot-film-poster.webp" muted loop playsinline preload="metadata"></video>
+    <button class="pill" data-film="assets/video/dot-film.mp4">소리와 함께 보기</button>
+  </div>
+  <div class="dot-h x">
+    <h2>평소엔 시계처럼 곁에 있다가,<br>필요할 때만 말을 걸어요.</h2>
+    <p class="lead">DOT은 내 일상과 상태를 살피고, 필요한 회복 자원을 안내하고, 회복의 순간을 남기게 돕는 디바이스예요. 작은 화면이라 하던 일의 흐름을 크게 방해하지 않아요.</p>
+  </div>
+  <div class="core x">
+    <button class="bezel" id="coreBz" aria-label="다음 화면 보기"><span class="scr" id="coreScr"></span></button>
+    <div>
+      <h3>필요한 순간에, 가볍게 확인하는 나의 상태</h3>
+      <p class="now fade" id="coreNow"></p>
+      <div class="ctl">
+        <button class="ib" id="coreP" aria-label="이전 화면"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+        <button class="ib" id="coreN" aria-label="다음 화면"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></button>
+        <div class="dots" id="coreDots"></div>
+      </div>
+    </div>
+  </div>
+  <div class="full rv"><img src="assets/img/dot-room.webp" alt="거실 선반 위에 놓인 DOT" loading="lazy"></div>
+  <div class="use x">
+    <h2>하나의 Core로,<br>어디든 함께</h2>
+    <div class="seg" id="segUse" role="group" aria-label="DOT을 쓰는 모습"><span class="th"></span><button>Stay</button><button>Detach</button><button>Carry</button></div>
+    <div class="use-ph" id="usePh">
+      <img class="on" src="assets/img/dot-imac.webp" alt="책상 위 Dock에 거치된 DOT">
+      <img src="assets/v3/dot-core-detach-hand.webp" alt="손으로 Dock에서 Core를 분리하는 모습" loading="lazy">
+      <img src="assets/img/dot-mount.webp" alt="워치 스트랩과 키링 Mount에 끼운 Core" loading="lazy">
+    </div>
+    <p class="use-cap fade" id="useCap"></p>
+  </div>
+  <div class="pair x">
+    <div class="ph rv"><img src="assets/img/friends.webp" alt="친구들과 키링 Mount를 단 Core로 사진을 남기는 모습" loading="lazy"></div>
+    <div>
+      <h2>찍기만 하면,<br>기록은 COMMA가 남겨요.</h2>
+      <p class="lead">회복 활동을 마치면 앱이나 DOT이 기록을 제안해요. 원할 때 Core의 카메라로 사진이나 영상을 남기면, AI가 활동 내용을 바탕으로 회복 기록을 대신 써 줘요. 모은 기록은 언제든 다시 돌아볼 수 있어요.</p>
+    </div>
+  </div>
+</section>
+
+<section class="app" id="app"><div class="x">
+  <h2>나에게 맞는 회복을 발견하고,<br>일상에 더해요.</h2>
+  <div class="appx">
+    <div class="phone"><div class="scr" id="phScr"></div><span class="isl"></span></div>
+    <div><div class="tabs" id="tabs"></div><p class="desc fade" id="appDesc"></p></div>
+  </div>
+</div></section>
+
+<section class="buy" id="buy">
+  <div class="eb" id="eb"><div class="eb-in x">
+    <span><b>Early bird</b>12월 31일까지 선착순 1,000대</span>
+    <span>마감까지 <span class="eb-cd" id="ebCd"></span></span>
+  </div></div>
+  <div class="buy-g">
+    <div class="stage" id="stage"></div>
+    <div class="opt">
+      <h2>나의 DOT 고르기</h2>
+      <p class="pr"><b id="prNow"></b><s id="prList"></s><em id="prOff"></em></p>
+      <p class="pday" id="pDay"></p>
+      <h4>컬러</h4>
+      <div class="colors" id="colors"></div>
+      <p class="cname" id="cname"></p>
+      <h4>Mount<span>원하는 만큼 담을 수 있어요</span></h4>
+      <div class="mounts" id="mounts"></div>
+      <button class="mall" id="mAll"></button>
+      <ul class="perks" id="perks"></ul>
+      <div class="total"><span>합계</span><b id="tot"></b></div>
+      <p class="saved" id="saved"></p>
+      <a class="pill ink lg buy-btn" id="buyBtn" href="buy.html"></a>
+      <p class="note" id="shipNote"></p>
+    </div>
+  </div>
+  <div class="faq x">
+    <h2>구매 전에 궁금한 것</h2>
+    <div class="faq-tabs" id="faqTabs" role="group" aria-label="질문 분류"><button type="button" data-c="buy" aria-selected="true">구매</button><button type="button" data-c="use" aria-selected="false">사용</button></div>
+    <div class="faq-l" data-c="buy">
+      <details name="faq-buy"><summary>얼리버드는 언제까지인가요?</summary><p>12월 31일까지, 선착순 1,000대예요. 이후에는 정가로 판매해요. 출시 전 예약이고, 2027년 1월 5일부터 순차 배송돼요.</p></details>
+      <details name="faq-buy"><summary>Mount는 꼭 사야 하나요?</summary><p>아니요. Core와 Dock만으로 책상 위에서 쓸 수 있어요. 들고 다니고 싶다면 워치 스트랩, 키링, 클립 중 원하는 만큼 담으세요. 3종을 함께 담으면 더 저렴해요.</p></details>
+      <details name="faq-buy"><summary>앱 구독료가 따로 있나요?</summary><p>없어요. DOT을 구매하면 COMMA App을 추가 비용 없이 쓸 수 있어요.</p></details>
+      <details name="faq-buy"><summary>써 보고 마음이 바뀌면요?</summary><p>받은 날부터 30일 안에 무료로 반품할 수 있어요. 제품 품질 보증은 1년이에요.</p></details>
+    </div>
+    <div class="faq-l" data-c="use" hidden>
+      <details name="faq-use"><summary>무엇을 보고 회복을 제안하나요?</summary><p>지금의 회복 자원 상태와 생활 패턴, 일정, 위치, 지난 회복 기록을 함께 살펴요. 서드파티 앱을 연동하면 일상 맥락 정보도 더해져요.</p></details>
+      <details name="faq-use"><summary>바쁜 날에도 쓸 수 있나요?</summary><p>바쁜 일정 사이에는 짧게 실천할 수 있는 활동을, 여유가 있는 날에는 취향에 맞는 다양한 활동을 제안해요. 에너지가 낮은 날에는 지금 필요한 회복을 먼저 안내해요.</p></details>
+      <details name="faq-use"><summary>DOT이 계속 알림을 보내나요?</summary><p>평소에는 시계나 직접 설정한 화면을 보여 줘요. 회복 자원 상태와 안내는 필요할 때 작은 화면으로 확인할 수 있어요.</p></details>
+      <details name="faq-use"><summary>사진은 언제 찍히나요?</summary><p>원할 때 Core의 카메라로 직접 남겨요. 남긴 사진과 영상은 수집한 회복 자원과 함께 앱의 메모리에 저장돼요.</p></details>
+    </div>
+  </div>
+</section>
+
+<section class="end" aria-label="마무리">
+  <div class="end-top x">
+    <h2>오늘의 쉼표,<br>지금 찍어 볼까요?</h2>
+    <div class="end-cta"><p id="endEb"></p><a class="pill ink lg" href="#buy">구매하기</a></div>
+  </div>
+  <img class="giant" src="assets/brand/logo-h.svg" alt="COMMA">
+</section>
+
+</main>
+
+<footer>
+  <div class="row x">
+    <span><b>COMMA</b> · A SMALL BREAK FOR YOUR EVERYDAY FLOW</span>
+    <span>Team <b>이호진 · 전지민 · 최혜윤</b> · 고려대학교 제품시스템디자인 졸업 프로젝트</span>
+    <span><a href="research.html" target="_blank" rel="noopener">Research</a> · © 2026 COMMA</span>
+  </div>
+</footer>
+
+<dialog id="player" aria-label="영상">
+  <video playsinline controls preload="none"></video>
+  <button class="x-btn" id="playerX" aria-label="영상 닫기">×</button>
+</dialog>
+
+<script src="assets/shop.js"></script>
+<script>
+(function(){
+/* ─── 내용은 여기서 고칩니다 (가격·컬러·Mount는 assets/shop.js) ─── */
+
+const DAY=[
+  ['assets/v3film/day-0700.webp','오늘도 알람 소리로 하루를 시작해요.','아침 7시 알람'],
+  ['assets/v3film/day-commute.webp','학업과 업무, 반복되는 일정으로 가득한 하루.','출근길 인파'],
+  ['assets/v3film/day-desk.webp','해야 할 일은 잘 챙기면서, 내 상태는 자꾸 뒤로 미루게 돼요.','사무실 책상 앞'],
+  ['assets/v3film/day-tired.webp','쉬어야 한다는 건 아는데, 뭘 해야 쉬어지는지 막막한 오후.','턱을 괸 오후'],
+  ['assets/v3film/day-river.webp','그럴 때 COMMA가 먼저 말을 걸어요. 지금의 나에게 맞는 아주 작은 쉼으로.','강변을 걷는 잠깐의 쉼']
+];
+const WHO=[
+  {n:'대학생',pain:'수업과 팀플, 공모전까지. 쉴 틈 없이 이어지는 하루예요.',after:'평소 바쁘게 지나치던 길을 천천히 걷다가, 우연히 만난 다람쥐를 Core로 찍어 남겨요.',use:['time','place','log'],rec:'캠퍼스의 산책길',why:'다음 일정까지 남은 시간과 지금 있는 곳, 지난 회복 기록을 보고 골랐어요.',scr:'assets/v3/pui-resource-prompt-body.webp'},
+  {n:'팀 리더',pain:'팀원과 여러 프로젝트를 챙기느라, 내 상태는 늘 뒤로 밀려요.',after:'잠시 업무에서 벗어나 좋아하던 사진집을 펼치고, 책장 사이로 스미는 햇살을 Core로 남겨요.',use:['time','log'],rec:'근처 서점 들르기',why:'전에 좋았던 회복 경험과 남은 시간을 보고 골랐어요.',scr:'assets/v3/pui-resource-prompt-leisure.webp'},
+  {n:'재택근무자',pain:'출퇴근 없이 책상 앞에서 보내는 하루. 일과 휴식의 경계가 자꾸 흐려져요.',after:'회의 사이에 집 근처 베이커리에 들러 간식을 사고, 바깥에서 먹으며 잠깐 쉬어요.',use:['state','time'],rec:'베이커리 간식, 밖에서 먹기',why:'다음 회의까지 남은 30분과 부족한 신체 자원을 보고 골랐어요.',scr:'assets/v3/pui-resource-prompt-body.webp'},
+  {n:'취업준비생',pain:'지원과 평가가 반복될수록, 결과에 따라 마음이 크게 흔들려요.',after:'불합격 메일을 받은 날, 좋아하는 음악을 틀고 10분만 나갈 준비를 해요.',use:['state'],rec:'음악 들으며 10분 외출 준비',why:'불합격 메일 이후 정서 자원이 부족해진 상태를 알아차리고 골랐어요.',scr:'assets/v3/pui-resource-prompt-mind.webp'},
+  {n:'고등학생',pain:'학교와 독서실 일정이 이어져, 쉬어야 할 순간을 놓치기 쉬워요.',after:'독서실 가기 전 문구점에 들러 마음에 드는 스티커를 고르고, 다이어리에 붙이며 하루를 마쳐요.',use:['time','place','log'],rec:'독서실 가는 길, 문구점 들르기',why:'오후 일정 사이 남은 시간과 지금 있는 곳, 평소 즐겨 한 활동을 보고 골랐어요.',scr:'assets/v3/pui-resource-prompt-leisure.webp'}
+];
+/* 회복 자원에 부여된 색은 없다 */
+const RES=[
+  {k:'body',ko:'신체 자원',d:'몸을 움직이고 쉬며 일상을 이어갈 여유',ex:'캠퍼스의 산책길을',scr:'assets/v3/pui-resource-prompt-body.webp'},
+  {k:'mind',ko:'정서 자원',d:'감정을 알아차리고 마음을 안정시킬 수 있는 여유',ex:'음악 들으며 10분 외출 준비를',scr:'assets/v3/pui-resource-prompt-mind.webp'},
+  {k:'leisure',ko:'여가 자원',d:'내가 고른 취향과 즐거움을 누리는 여유',ex:'근처 서점 들르기를',scr:'assets/v3/pui-resource-prompt-leisure.webp'},
+  {k:'relation',ko:'관계 자원',d:'사람과 연결되며 얻는 지지와 소속감',ex:'친구와 밸런스 게임 하기를',scr:'assets/v3/pui-resource-prompt-relation.webp'}
+];
+const LINEUP=[['purple',73.23,'536/952'],['blue',85.38,'598/1110'],['mint',100,'723/1300'],['lime',75.15,'559/977']];
+const STEPS=[
+  ['알아차리기','일상과 상태를 살피고 지금 필요한 회복 자원을 확인해요.','assets/v3/dot-purple-gauge-screen.webp',''],
+  ['발견하고 실천하기','지금 상황에 맞는 회복 활동을 골라 실천해요.','assets/v3/app-recover-recommend.webp','ct'],
+  ['기록하기','활동과 사진·영상, 모은 회복 자원을 남겨요.','assets/v3/dot-trio-gallery-screen.webp',''],
+  ['다시 발견하기','지난 기록을 바탕으로 나에게 맞는 회복을 다시 찾아요. 쌓인 기록은 다음 제안에도 반영돼요.','assets/v3/app-memory-map.webp','ct']
+];
+const PUI=[
+  ['assets/v3/pui-clock-idle.webp','평소에는 시계를 보여 줘요.'],
+  ['assets/v3/pui-clock-pastel.webp','내가 설정한 화면으로 바꿀 수도 있어요.'],
+  ['assets/v3/pui-resource-gauge.webp','네 가지 회복 자원이 얼마나 남았는지 한눈에 봐요.'],
+  ['assets/v3/pui-resource-now-mind.webp','필요할 때 지금 채워야 할 회복 자원을 알려 줘요.'],
+  ['assets/v3/pui-resource-prompt-leisure.webp','회복 활동을 하며 여가 자원을 모아요.'],
+  ['assets/v3/pui-menu.webp','카메라, 갤러리, 회복 탐색으로 바로 들어가요.'],
+  ['assets/v3/pui-camera-capture.webp','Core의 카메라로 회복의 순간을 남겨요.'],
+  ['assets/v3/pui-recovery-complete.webp','‘친구와 피크닉 가기’를 회복 기록으로 저장해요.'],
+  ['assets/v3/pui-resource-select.webp','이번 활동으로 어떤 자원을 모았는지 골라요.'],
+  ['assets/v3/pui-app-handoff.webp','더 자세한 안내는 COMMA 앱으로 이어 받아요.']
+];
+const USE=['평소에는 책상 위 Dock에 두고 일상을 함께해요.','나갈 때는 Core를 Dock에서 분리해요.','Mount에 끼워 손목이나 가방에 달고 나가요.'];
+const APP=[
+  ['assets/v3/app-home-status.webp','Home','내 상태에 맞춰 달라지는 홈','회복 자원 잔량과 일정, 시간, 위치에 맞춰 홈 화면의 정보가 달라져요. 에너지가 낮은 날에는 지금 필요한 회복을 먼저 안내하고, 여유가 있는 날에는 다양한 활동을 둘러볼 수 있어요.'],
+  ['assets/v3/app-recover-recommend.webp','Recover','나에게 맞춰진 오늘의 회복','지금의 상태와 지난 기록을 바탕으로 회복 활동을 추천해요. 직접 둘러보거나, 네 가지 회복 자원을 조합해 나만의 회복 활동을 만들 수도 있어요.'],
+  ['assets/v3/app-memory-map.webp','Memory','쌓여가는 나만의 회복 기록','실천한 회복 활동이 사진·영상, 모은 회복 자원과 함께 쌓여요. 회복자원 맵에서는 장소별 기록을 둘러보며 익숙한 곳에서도 새로운 회복을 발견해요.'],
+  ['assets/v3/app-schedule-calendar.webp','Schedule','일상 사이에 더해지는 회복','일정과 남은 시간을 보고 회복을 계획하게 도와줘요. 대화 속 일정을 파악해 등록을 제안하고, 일정 사이에 쉼을 위한 시간을 마련해요.'],
+  ['assets/v3/app-community-feed.webp','Community','함께 나누는 회복의 경험','친구의 회복 기록을 나눠 보고, 채팅으로 회복 활동을 제안하고, 챌린지로 새로운 경험을 함께 만들어요.']
+];
+const SHOP=window.SHOP, COLORS=SHOP.colors, MOUNTS=SHOP.mounts;
+
+/* ─── 동작 ─── */
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const RM=matchMedia('(prefers-reduced-motion:reduce)').matches;
+function swap(el,fn){ el.classList.add('out'); clearTimeout(el._t); el._t=setTimeout(()=>{fn();el.classList.remove('out');},RM?0:240); }
+function seg(root,labels,on){
+  if(labels) root.insertAdjacentHTML('beforeend',labels.map(l=>`<button>${l}</button>`).join(''));
+  const th=$('.th',root), bs=$$('button',root);
+  function pick(i,user){ bs.forEach((b,j)=>{b.classList.toggle('cur',j===i);b.setAttribute('aria-pressed',j===i);}); fix(); if(user) bs[i].scrollIntoView({inline:'nearest',block:'nearest'}); on&&on(i); root._i=i; }
+  function fix(){ const b=bs[root._i??0]; const c=$('.cur',root)||b; th.style.width=c.offsetWidth+'px'; th.style.transform=`translateX(${c.offsetLeft}px)`; }
+  bs.forEach((b,i)=>b.addEventListener('click',()=>pick(i,true)));
+  addEventListener('resize',fix); addEventListener('load',fix);
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(fix);
+  pick(0);
+}
+
+/* 머리글: 스크롤 진행선, 현재 탭, 모바일 메뉴 */
+const nav=$('#nav'), bar=$('#bar'), tabs=$$('.links a[href^="#"]'), secs=tabs.map(a=>$(a.getAttribute('href')));
+const sheet=$('#sheet'), burger=$('#burger');
+function sheetOpen(on){ sheet.hidden=!on; burger.setAttribute('aria-expanded',on); document.body.style.overflow=on?'hidden':''; }
+burger.addEventListener('click',()=>sheetOpen(true));
+$('#sheetClose').addEventListener('click',()=>sheetOpen(false));
+$$('a',sheet).forEach(a=>a.addEventListener('click',()=>sheetOpen(false)));
+
+/* 히어로 DOT 네 대 */
+const lu=$('#lineup');
+lu.innerHTML=LINEUP.map(([id,h,ar])=>`<a href="#buy" data-color="${id}" aria-label="${COLORS.find(c=>c.id===id).n} DOT 고르기" style="height:${h}%;aspect-ratio:${ar}"><img src="assets/img/dot-${id}.webp" alt=""></a>`).join('');
+
+/* 하루: 스크롤하면 사진과 문장이 넘어간다 */
+const day=$('#day'), dph=$('#dayPh'), dpr=$('#dayProg'), dcap=$('#dayCap');
+dph.innerHTML=DAY.map((d,i)=>`<img src="${d[0]}" alt="${d[2]}" class="${i?'':'on'}" loading="${i<2?'eager':'lazy'}">`).join('');
+dpr.innerHTML=DAY.map(()=>'<i></i>').join('');
+day.style.height=`calc(100svh + ${DAY.length*62}vh)`;
+let dk=-1;
+function dayStep(k){ if(k===dk) return; const first=dk<0; dk=k; $$('img',dph).forEach((im,j)=>im.classList.toggle('on',j===k)); $$('i',dpr).forEach((x,j)=>x.classList.toggle('f',j<=k));
+  dcap.classList.add('out'); clearTimeout(dcap._t); dcap._t=setTimeout(()=>{dcap.textContent=DAY[k][1];dcap.classList.remove('out');},first||RM?0:200); }
+dayStep(0);
+
+function onScroll(){
+  const y=scrollY, H=document.documentElement.scrollHeight-innerHeight;
+  nav.classList.toggle('solid',y>24);
+  bar.style.transform=`scaleX(${H>0?y/H:0})`;
+  let cur=-1; secs.forEach((s,i)=>{ if(s&&s.getBoundingClientRect().top<=innerHeight*.35) cur=i; });
+  tabs.forEach((a,i)=>a.classList.toggle('on',i===cur));
+  const r=day.getBoundingClientRect(), span=r.height-innerHeight;
+  if(span>0) dayStep(Math.max(0,Math.min(DAY.length-1,Math.floor(-r.top/span*DAY.length))));
+}
+let tick=false;
+addEventListener('scroll',()=>{ if(tick) return; tick=true; requestAnimationFrame(()=>{tick=false;onScroll();}); },{passive:true});
+addEventListener('resize',onScroll); onScroll();
+
+/* 나의 하루 */
+const whoL=$('#whoL'), rec=$('#rec'), inp=$$('#inp li');
+function whoRender(i){ const w=WHO[i];
+  $('#whoPain').textContent=w.pain; $('#whoAfter').textContent=w.after;
+  rec.innerHTML=`<small>오늘의 제안</small><b>${w.rec}</b><p>${w.why}</p><span class="scr"><img src="${w.scr}" alt=""></span>`;
+}
+let whoFirst=true;
+seg($('#segWho'),WHO.map(w=>w.n),i=>{ const w=WHO[i]; inp.forEach(li=>li.classList.toggle('on',w.use.includes(li.dataset.k)));
+  if(whoFirst){whoFirst=false;whoRender(i);return;} whoL.classList.add('out'); swap(rec,()=>{whoRender(i);whoL.classList.remove('out');}); });
+
+/* 네 가지 회복 자원 */
+const rb=$('#resBtn'), ro=$('#resOut'), rs=$('#resScr');
+rb.innerHTML=RES.map((r,i)=>`<button data-r="${i}"><img src="assets/brand/icon-${r.k}.svg" alt="">${r.ko}</button>`).join('');
+rs.innerHTML=RES.map(r=>`<img src="${r.scr}" alt="" loading="lazy">`).join('');
+let ri=-1;
+function resPick(i){ if(i===ri) return; const first=ri<0; ri=i; const r=RES[i];
+  $$('button',rb).forEach((b,j)=>b.classList.toggle('cur',j===i)); $$('img',rs).forEach((m,j)=>m.classList.toggle('on',j===i));
+  const fill=()=>{ro.innerHTML=`<p>${r.d}</p><p class="ex">이럴 때 COMMA는 <b>${r.ex}</b> 건네요.</p><a class="pill ink" href="#buy">나의 DOT 고르기</a>`;};
+  first||RM?fill():swap(ro,fill);
+}
+rb.addEventListener('click',e=>{const b=e.target.closest('button'); if(b) resPick(+b.dataset.r);});
+resPick(0);
+
+/* 네 걸음 */
+const jph=$('#jph'), jt=$('#jt'), jds=$$('.jd');
+jph.innerHTML=STEPS.map(s=>`<img class="${s[3]}" src="${s[2]}" alt="${s[0]}" loading="lazy">`).join('');
+function step(i,first){ jds.forEach(d=>d.classList.toggle('cur',+d.dataset.j===i)); $$('img',jph).forEach((m,j)=>m.classList.toggle('on',j===i));
+  const t=()=>{jt.innerHTML=`<h3>${STEPS[i][0]}</h3><p>${STEPS[i][1]}</p>`;}; first?t():swap(jt,t); }
+jds.forEach(d=>d.addEventListener('click',()=>step(+d.dataset.j))); step(0,true);
+
+/* 제품 영상: 보일 때만 소리 없이 재생 */
+const pf=$('#pfilm');
+new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting) pf.play().catch(()=>{}); else pf.pause(); }),{threshold:.35}).observe(pf);
+
+/* 영상 창 */
+const player=$('#player'), pv=$('video',player);
+document.addEventListener('click',e=>{ const b=e.target.closest('[data-film]'); if(!b) return; pv.src=b.dataset.film; player.showModal(); pv.muted=false; pv.currentTime=0; pv.play().catch(()=>{}); pf.pause(); });
+function closePlayer(){ pv.pause(); pv.removeAttribute('src'); pv.load(); if(player.open) player.close(); }
+$('#playerX').addEventListener('click',closePlayer); player.addEventListener('cancel',()=>{pv.pause();}); pv.addEventListener('ended',closePlayer);
+
+/* Core 화면 */
+const scr=$('#coreScr'), now=$('#coreNow'), cd=$('#coreDots');
+scr.innerHTML=PUI.map(p=>`<img src="${p[0]}" alt="" loading="lazy">`).join(''); cd.innerHTML=PUI.map(()=>'<i></i>').join('');
+let ci=-1;
+function core(i){ const first=ci<0; ci=(i+PUI.length)%PUI.length; $$('img',scr).forEach((m,j)=>m.classList.toggle('on',j===ci)); $$('i',cd).forEach((d,j)=>d.classList.toggle('cur',j===ci));
+  const t=()=>{now.textContent=PUI[ci][1];}; first?t():swap(now,t); }
+$('#coreBz').addEventListener('click',()=>core(ci+1)); $('#coreN').addEventListener('click',()=>core(ci+1)); $('#coreP').addEventListener('click',()=>core(ci-1)); core(0);
+
+/* Stay · Detach · Carry */
+const useIm=$$('#usePh img'), useCap=$('#useCap'); let useFirst=true;
+seg($('#segUse'),null,i=>{ useIm.forEach((m,j)=>m.classList.toggle('on',j===i)); const t=()=>{useCap.textContent=USE[i];}; if(useFirst){useFirst=false;t();}else swap(useCap,t); });
+
+/* 앱 */
+const ph=$('#phScr'), tb=$('#tabs'), ad=$('#appDesc');
+ph.innerHTML=APP.map(a=>`<img src="${a[0]}" alt="${a[2]}" loading="lazy">`).join('');
+tb.innerHTML=APP.map(a=>`<button><b>${a[1]}</b><span>${a[2]}</span></button>`).join('');
+let ai=-1;
+function appPick(i){ const first=ai<0, prev=ai; ai=i; $$('button',tb).forEach((b,j)=>b.classList.toggle('cur',j===i));
+  $$('img',ph).forEach((m,j)=>{ m.classList.toggle('on',j===i); m.classList.toggle('out',j===prev&&!first); if(j!==i&&j!==prev) m.classList.remove('out'); });
+  const t=()=>{ad.textContent=APP[i][3];}; first?t():swap(ad,t); }
+$$('button',tb).forEach((b,i)=>b.addEventListener('click',()=>appPick(i))); appPick(0);
+
+/* 구매 구성 */
+const stage=$('#stage'), cs=$('#colors'), ms=$('#mounts'), mAll=$('#mAll'); let color='mint'; const picked=new Set();
+const won=SHOP.won;
+stage.innerHTML=COLORS.map(c=>`<img src="${c.img}" alt="${c.n} DOT" loading="lazy">`).join('');
+cs.innerHTML=COLORS.map(c=>`<button data-c="${c.id}" style="background:${c.hex}" aria-label="${c.n} DOT"></button>`).join('');
+function renderBuy(){ const c=COLORS.find(x=>x.id===color), e=SHOP.isEarly(), k=e?'early':'list', n=picked.size, q=SHOP.quote(n);
+  stage.style.background=c.tint; $$('img',stage).forEach((m,j)=>m.classList.toggle('on',COLORS[j].id===color));
+  $$('button',cs).forEach(b=>b.classList.toggle('cur',b.dataset.c===color)); $('#cname').textContent=c.n;
+  $$('button',ms).forEach(b=>b.classList.toggle('cur',picked.has(b.dataset.m)));
+  mAll.classList.toggle('cur',n===MOUNTS.length);
+  $('#tot').textContent=won(q.pay);
+  $('#saved').textContent=q.save>0?`정가보다 ${won(q.save)} 아껴요`:'';
+  const b=$('#buyBtn'); b.textContent=e?'얼리버드로 구매하기':'구매하기';
+  b.href=`buy.html?color=${color}${n?'&mounts='+[...picked].join(','):''}`;
+}
+ms.innerHTML=MOUNTS.map(m=>`<button data-m="${m.id}" aria-label="${m.n} Mount 담기"><img src="${m.img}" alt="" loading="lazy"><b>${m.n}</b><span>${m.s}</span><span>${won(SHOP.isEarly()?SHOP.mount.early:SHOP.mount.list)}</span></button>`).join('');
+(function(){ const e=SHOP.isEarly(), k=e?'early':'list', d=SHOP.dot[k];
+  $('#prNow').textContent=won(d);
+  $('#prList').textContent=e?won(SHOP.dot.list):'';
+  $('#prOff').textContent=e?`얼리버드 ${Math.round((1-SHOP.dot.early/SHOP.dot.list)*100)}% 할인`:''; $('#prOff').hidden=!e;
+  $('#pDay').textContent=`Core · Dock · COMMA App 포함. 1년으로 나누면 하루 약 ${(Math.round(d/365/10)*10).toLocaleString('ko-KR')}원이에요.`;
+  mAll.innerHTML=`Mount 3종 모두 담기<span>${e?`<s>${won(SHOP.mountSet.list)}</s>`:''}${won(SHOP.mountSet[k])}</span>`;
+  $('#perks').innerHTML=(e?[`DOT 정가에서 ${won(SHOP.dot.list-SHOP.dot.early)} 할인`,`Mount 3종을 함께 담으면 ${won(SHOP.mountSet.list-SHOP.mountSet.early)} 할인`]:[]).concat(['무료 배송',`${SHOP.returnDays}일 안에 마음이 바뀌면 무료 반품`,'앱 구독료 없음']).map(t=>`<li>${t}</li>`).join('');
+  $('#shipNote').textContent=SHOP.shipping;
+  const line=`<b>얼리버드 ${won(SHOP.dot.early)}</b><s>${won(SHOP.dot.list)}</s>`;
+  $('#heroEb').innerHTML=e?line:`<b>${won(SHOP.dot.list)}</b>`;
+  $('#endEb').textContent=e?`얼리버드 ${won(SHOP.dot.early)}, 12월 31일까지`:won(SHOP.dot.list);
+  const eb=$('#eb'); if(!e){eb.hidden=true;return;}
+  const tickCd=()=>{$('#ebCd').textContent=SHOP.left();}; tickCd(); setInterval(tickCd,1000);
+})();
+cs.addEventListener('click',e=>{const b=e.target.closest('button'); if(b){color=b.dataset.c;renderBuy();}});
+ms.addEventListener('click',e=>{const b=e.target.closest('button'); if(!b) return; const id=b.dataset.m; picked.has(id)?picked.delete(id):picked.add(id); renderBuy();});
+mAll.addEventListener('click',()=>{ if(picked.size===MOUNTS.length) picked.clear(); else MOUNTS.forEach(m=>picked.add(m.id)); renderBuy(); });
+document.addEventListener('click',e=>{const a=e.target.closest('[data-color]'); if(a){color=a.dataset.color;renderBuy();}});
+renderBuy();
+
+/* 자주 묻는 질문 분류 */
+const ft=$$('#faqTabs button'), fl=$$('.faq-l');
+ft.forEach(t=>t.addEventListener('click',()=>{ ft.forEach(x=>x.setAttribute('aria-selected',x===t)); fl.forEach(l=>{l.hidden=l.dataset.c!==t.dataset.c;}); }));
+
+/* 사진이 처음 보일 때 살짝 자리를 잡는다 */
+const rvo=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); rvo.unobserve(e.target);} }),{threshold:.2});
+$$('.rv').forEach(el=>rvo.observe(el));
+})();
+</script>
+</body>
+</html>

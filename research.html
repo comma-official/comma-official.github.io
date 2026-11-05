@@ -1,0 +1,1342 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="COMMA가 청년들의 일상과 회복 경험을 이해하기 위해 진행한 문헌 조사, 디지털 에스노그라피, 설문조사, 심층 인터뷰.">
+<meta name="theme-color" content="#FFFFFF">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<title>COMMA Research</title>
+<style>
+/* Layout: one 1032×1376 portrait stage (iPad Pro 13" CSS size) zoomed to fit; 64px margins; each view scrolls on its own.
+   Look: COMMA brand. White paper, ink #282828, flat Sky / Mint / Yellow fields used whole, never as tinted boxes.
+   Data is drawn as dots and thin bars in one sky ramp (validated ordinal ramp, light end 2:1 on white). */
+@font-face{font-family:"Instrument Sans";src:url(assets/fonts/InstrumentSans-Variable.woff2) format("woff2");font-weight:400 700;font-display:swap}
+@font-face{font-family:"Wanted Sans";src:url(assets/fonts/WantedSans-Variable-kr.woff2) format("woff2");font-weight:400 1000;font-display:swap}
+:root{
+  --paper:#FFFFFF;
+  --ink:#282828;
+  --ink-2:#596068;
+  --ink-3:#8D949B;
+  --line:#E3E9ED;
+  --mist:#F2F6F8;
+  --surround:#E9EEF1;
+  --sky:#72DCFF;
+  --sky-edge:#23DAFF;
+  --mint:#7BFFC8;
+  --yellow:#EAFE45;
+  --dark:#282828;
+  --on-dark:#FFFFFF;
+  --grad:linear-gradient(100deg,#AFEBFF 0%,#A8FFDB 52%,#F7FFB1 100%);
+  --d1:#4EC3EC;--d2:#1C9FD0;--d3:#117FAA;--d4:#0B6084;--d5:#07445D;
+  --tail:#D3E2E8;
+  --display:"Instrument Sans","Wanted Sans","Apple SD Gothic Neo",system-ui,sans-serif;
+  --body:"Wanted Sans","Apple SD Gothic Neo","Noto Sans KR",system-ui,sans-serif;
+  --m:64px;
+  --ease:cubic-bezier(.65,0,.35,1);
+  --spring:cubic-bezier(.34,1.45,.5,1);
+  color-scheme:light;
+}
+html,body{height:100%}
+body{background:var(--surround);color:var(--ink);font-family:var(--body);margin:0;overflow:hidden;word-break:keep-all;overflow-wrap:break-word;
+  -webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;-webkit-font-smoothing:antialiased}
+*,*::before,*::after{box-sizing:border-box}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;touch-action:manipulation;text-align:inherit}
+button:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--d2);outline-offset:3px}
+img,video{display:block;max-width:100%}
+h1,h2,h3,h4,p,ol,ul{margin:0}
+ol,ul{padding:0;list-style:none}
+h1,h2,h3,h4{text-wrap:balance;font-weight:800;letter-spacing:-.035em}
+p{text-wrap:pretty}
+
+#app{position:fixed;inset:0;display:grid;place-items:center;
+  padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px)}
+#stage{position:relative;width:1032px;height:1376px;background:var(--paper);overflow:hidden;font-size:19px;line-height:1.7;zoom:var(--z,1)}
+
+.view{position:absolute;inset:0;visibility:hidden;opacity:0;transition:opacity .4s var(--ease),visibility 0s linear .4s;background:var(--paper)}
+.view.on{visibility:visible;opacity:1;transition:opacity .4s var(--ease),visibility 0s}
+.view.cut{transition:none}
+.scroll{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.scroll::-webkit-scrollbar{width:0;height:0}
+#wipe{position:absolute;inset:0;z-index:90;pointer-events:none;visibility:hidden}
+#wipe.on{visibility:visible}
+
+/* type */
+.en{font-family:var(--display);font-weight:500;letter-spacing:-.04em}
+.h1{font-size:52px;line-height:1.26}
+.h2{font-size:42px;line-height:1.3}
+.h3{font-size:31px;line-height:1.36}
+.h4{font-size:23px;line-height:1.45}
+.p{font-size:19px;line-height:1.78;color:var(--ink-2);max-width:35em}
+.cap{font-size:15px;line-height:1.55;color:var(--ink-3)}
+.wrap{padding-left:var(--m);padding-right:var(--m)}
+.sec{padding:128px var(--m) 0}
+.sec.s{padding-top:88px}
+.stack{display:grid;gap:22px}
+.lbl{font-size:15px;font-weight:700;color:var(--ink-3)}
+
+/* controls */
+.bar{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:14px;height:92px;padding:0 28px 0 32px;background:var(--paper);border-bottom:1px solid var(--line)}
+.bar .logo{height:26px;width:auto}
+.bar .title{font-family:var(--display);font-weight:500;font-size:21px;letter-spacing:-.015em}
+.bar .sp{flex:1}
+.ib{width:56px;height:56px;border-radius:50%;display:grid;place-items:center;background:var(--mist);flex:none;transition:transform .2s var(--ease)}
+.ib:active{transform:scale(.92)}
+.ib svg{width:24px;height:24px}
+.btn{display:inline-flex;align-items:center;gap:12px;height:60px;padding:0 28px;border-radius:30px;font-size:18px;font-weight:800;letter-spacing:-.02em;background:var(--ink);color:var(--paper);transition:transform .2s var(--ease)}
+.btn:active{transform:scale(.97)}
+.btn svg{width:20px;height:20px}
+.btn.ghost{background:var(--mist);color:var(--ink)}
+.seg{position:relative;display:inline-flex;background:var(--mist);border-radius:31px;padding:5px;max-width:100%;flex-wrap:nowrap}
+.seg button{position:relative;z-index:1;height:52px;padding:0 22px;border-radius:26px;font-weight:700;font-size:17px;color:var(--ink-2);white-space:nowrap;transition:color .35s var(--ease)}
+.seg button.cur{color:var(--paper)}
+.seg .th{position:absolute;top:5px;height:52px;left:0;width:0;border-radius:26px;background:var(--ink);transition:transform .45s var(--ease),width .45s var(--ease)}
+.swap{transition:opacity .3s var(--ease),transform .3s var(--ease)}
+.swap.out{opacity:0;transform:translateY(8px)}
+
+/* ───────── START ───────── */
+#v-start .in{position:absolute;inset:0;display:flex;flex-direction:column;padding:60px var(--m) 52px}
+.st-logo{height:38px;width:auto;align-self:flex-start}
+.st-h{margin-top:56px;font-family:var(--display);font-weight:500;font-size:80px;line-height:1;letter-spacing:-.05em}
+.st-h i{font-style:normal;color:var(--sky-edge)}
+.st-ko{margin-top:26px;font-size:24px;font-weight:700;color:var(--ink-2);letter-spacing:-.02em}
+.lineup{position:relative;width:80%;margin:0 auto;aspect-ratio:1.98/1;max-width:100%}
+.lineup button{position:absolute;bottom:auto;transition:transform .55s var(--spring)}
+.lineup button img{width:100%;height:100%;object-fit:contain;pointer-events:none}
+.lineup button.up{transform:translateY(-22px)}
+.st-mid{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;gap:26px;padding:20px 0}
+.st-res{min-height:62px;display:flex;align-items:baseline;gap:14px;font-size:20px;color:var(--ink-2);line-height:1.5}
+.st-res b{font-size:24px;color:var(--ink);letter-spacing:-.03em;white-space:nowrap}
+.st-cta{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.cta{position:relative;min-height:290px;border-radius:40px;padding:36px 36px 34px;display:flex;flex-direction:column;justify-content:space-between;transition:transform .25s var(--ease)}
+.cta:active{transform:scale(.98)}
+.cta.r{background:var(--mint)}
+.cta.v{background:var(--sky)}
+.cta b{font-size:40px;line-height:1.2;letter-spacing:-.045em;font-weight:800}
+.cta .row{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
+.cta small{font-size:16px;line-height:1.5;font-weight:600;color:var(--ink);opacity:.72}
+.cta svg{width:44px;height:44px;flex:none}
+.st-foot{margin-top:28px;display:flex;gap:18px;font-size:15px;font-weight:700;color:var(--ink-3)}
+.st-foot span:last-child{margin-left:auto;font-weight:600}
+.on .rise{animation:rise .9s var(--ease) both}
+.on .w1{animation-delay:.05s}.on .w2{animation-delay:.14s}.on .w3{animation-delay:.24s}.on .w4{animation-delay:.34s}
+@keyframes rise{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+.on .lineup button{animation:drop .9s var(--spring) both}
+.on .lineup button:nth-child(1){animation-delay:.30s}.on .lineup button:nth-child(2){animation-delay:.38s}.on .lineup button:nth-child(3){animation-delay:.46s}.on .lineup button:nth-child(4){animation-delay:.54s}
+@keyframes drop{from{opacity:0;transform:translateY(-40px)}to{opacity:1;transform:none}}
+
+/* ───────── RESEARCH HUB ───────── */
+.rh{padding:76px var(--m) 0}
+.rh .h1{margin-top:0}
+.rh .p{margin-top:26px;max-width:none}
+.concept{margin:96px var(--m) 0;display:grid;grid-template-columns:330px 1fr;gap:36px;padding-top:36px;border-top:1px solid var(--ink)}
+.concept .k{font-family:var(--display);font-weight:500;font-size:58px;line-height:.98;letter-spacing:-.05em}
+.concept h3{font-size:25px;margin-bottom:12px}
+.concept p{font-size:17.5px;line-height:1.75;color:var(--ink-2)}
+.proc{margin:120px var(--m) 0}
+.proc .h2{margin-bottom:46px}
+.track6{position:relative;display:grid;grid-template-columns:repeat(6,1fr)}
+.track6::before{content:"";position:absolute;left:calc(100%/12);right:calc(100%/12);top:27px;height:2px;background:var(--line)}
+.track6 .fill{position:absolute;left:calc(100%/12);top:27px;height:2px;background:var(--ink);width:0;transition:width .6s var(--ease)}
+.node{position:relative;display:grid;justify-items:center;gap:14px;padding-bottom:4px}
+.node i{width:56px;height:56px;border-radius:50%;background:var(--paper);border:2px solid var(--line);display:grid;place-items:center;font-style:normal;font-family:var(--display);font-weight:500;font-size:17px;color:var(--ink-3);transition:all .4s var(--ease)}
+.node.done i{border-color:var(--ink);color:var(--ink)}
+.node.cur i{background:var(--mint);border-color:var(--mint);color:var(--ink);transform:scale(1.14)}
+.node span{font-size:15.5px;font-weight:700;color:var(--ink-2);text-align:center;line-height:1.35}
+.groups{display:grid;grid-template-columns:3fr 2fr 1fr;gap:10px;margin-top:22px}
+.groups div{border-top:2px solid var(--ink);padding-top:10px;font-family:var(--display);font-size:14px;letter-spacing:.02em;color:var(--ink-3)}
+.preview{margin-top:44px;padding:40px 44px;border-radius:40px;background:var(--mist);display:grid;grid-template-columns:1fr auto;gap:12px 36px;align-items:end}
+.preview .en{font-size:46px;line-height:1.02}
+.preview .ko{font-size:19px;font-weight:700;color:var(--ink-2);margin-top:10px}
+.preview .hook{grid-column:1/-1;font-size:24px;line-height:1.5;font-weight:800;letter-spacing:-.03em;margin-top:18px}
+.preview .num{text-align:right}
+.preview .num b{display:block;font-family:var(--display);font-weight:500;font-size:84px;line-height:.9;letter-spacing:-.05em}
+.preview .num span{font-size:15px;color:var(--ink-3);font-weight:700}
+.preview .go{grid-column:1/-1;margin-top:20px}
+.ins-end{margin:128px 0 0;padding:96px var(--m) 100px;background:var(--sky)}
+.ins-end .h2{margin-bottom:44px}
+.ins-end ol{display:grid;gap:0;border-top:1px solid var(--ink)}
+.ins-end li{display:grid;grid-template-columns:96px 1fr;gap:20px;padding:26px 0;border-bottom:1px solid rgba(40,40,40,.25)}
+.ins-end li b{font-family:var(--display);font-weight:500;font-size:20px}
+.ins-end li h4{font-size:25px;margin-bottom:6px}
+.ins-end li p{font-size:17px;line-height:1.65;color:var(--ink)}
+.ins-end .btn{margin-top:44px}
+
+/* ───────── CHAPTER ───────── */
+.cdots{display:flex;gap:6px;margin-left:10px}
+.cdots button{width:44px;height:44px;display:grid;place-items:center}
+.cdots button i{width:12px;height:12px;border-radius:50%;background:var(--line);transition:all .35s var(--ease)}
+.cdots button.cur i{background:var(--ink);width:28px;border-radius:6px}
+.ch-h{padding:72px var(--m) 0}
+.ch-h .en{font-size:68px;line-height:1.02}
+.ch-h .ko{margin-top:16px;font-size:23px;font-weight:800;color:var(--ink-2);letter-spacing:-.03em}
+.ch-h .lead{margin-top:34px;font-size:25px;line-height:1.6;font-weight:700;letter-spacing:-.03em;color:var(--ink)}
+.pm{margin:44px var(--m) 0;display:grid;grid-template-columns:1fr 1fr;gap:36px;padding-top:26px;border-top:1px solid var(--line)}
+.pm>div{min-width:0}
+.pm b{display:block;font-size:15px;color:var(--ink-3);margin-bottom:8px}
+.pm p{font-size:17px;line-height:1.72;color:var(--ink-2)}
+.mod{margin:120px var(--m) 0}
+.mod>.hd{display:grid;gap:16px;margin-bottom:36px}
+.mod>.hd .p{max-width:none}
+.src{margin-top:18px;font-size:14px;color:var(--ink-3)}
+.foot-nav{margin:140px var(--m) 0;padding:40px 0 120px;border-top:1px solid var(--ink);display:grid;grid-template-columns:1fr auto;align-items:center;gap:20px;width:calc(100% - var(--m)*2)}
+.foot-nav small{display:block;font-size:15px;font-weight:700;color:var(--ink-3)}
+.foot-nav b{display:block;font-family:var(--display);font-weight:500;font-size:44px;letter-spacing:-.04em;line-height:1.1;margin-top:8px}
+.foot-nav svg{width:56px;height:56px}
+
+/* 12 stages */
+.s12-ph{display:grid;grid-template-columns:6fr 3fr 3fr;gap:8px;margin-bottom:14px}
+.s12-ph div{font-size:14px;font-weight:700;color:var(--ink-3);border-bottom:2px solid var(--line);padding-bottom:8px}
+.s12{position:relative;display:grid;grid-template-columns:repeat(12,1fr);touch-action:none;padding:20px 0 6px}
+.s12 .band{position:absolute;top:8px;height:72px;border-radius:36px;transition:opacity .4s var(--ease)}
+.s12 .band.e{left:calc(100%/12*3);width:calc(100%/12*4);background:var(--sky)}
+.s12 .band.d{left:calc(100%/12*10);width:calc(100%/12*2);background:var(--dark)}
+.s12 button{position:relative;height:72px;display:grid;place-items:center}
+.s12 button i{width:20px;height:20px;border-radius:50%;background:var(--ink);transition:transform .35s var(--spring),background .3s}
+.s12 button.dk i{background:var(--on-dark)}
+.s12 button.cur i{transform:scale(1.9)}
+.s12-n{display:grid;grid-template-columns:repeat(12,1fr);margin-top:6px}
+.s12-n span{text-align:center;font-family:var(--display);font-size:15px;color:var(--ink-3)}
+.s12-n span.cur{color:var(--ink);font-weight:700}
+.s12-out{margin-top:40px;display:grid;grid-template-columns:150px 1fr;gap:28px;align-items:start;min-height:180px}
+.s12-out .no{font-family:var(--display);font-weight:500;font-size:110px;line-height:.85;letter-spacing:-.06em}
+.s12-out h3{font-size:34px;line-height:1.3}
+.s12-out p{font-size:20px;color:var(--ink-2);margin-top:8px}
+.s12-out .z{display:inline-block;margin-top:16px;font-size:15px;font-weight:800;padding:6px 14px;border-radius:16px;background:var(--mist)}
+.s12-out .z.e{background:var(--sky)}
+.s12-out .z.d{background:var(--dark);color:var(--on-dark)}
+.legend{display:flex;flex-wrap:wrap;gap:22px;margin-top:22px;font-size:15px;color:var(--ink-2);font-weight:600}
+.legend span{display:inline-flex;align-items:center;gap:8px}
+.legend i{width:16px;height:16px;border-radius:50%;display:inline-block;flex:none}
+
+/* paper carousel */
+.car{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;margin:0 calc(var(--m)*-1);padding:0 var(--m) 6px;scroll-padding:0 var(--m);overscroll-behavior-x:contain}
+.car::-webkit-scrollbar{display:none}
+.pcard{flex:0 0 760px;scroll-snap-align:start;border:1px solid var(--line);border-radius:36px;padding:40px 40px 34px;display:flex;flex-direction:column;gap:18px;min-height:520px}
+.pcard .n{font-size:15px;font-weight:800;color:var(--ink-3)}
+.pcard h3{font-size:29px;line-height:1.38}
+.pcard p{font-size:17.5px;line-height:1.75;color:var(--ink-2)}
+.pcard .ct{margin-top:auto;padding-top:18px;border-top:1px solid var(--line);font-size:13.5px;line-height:1.55;color:var(--ink-3)}
+.pager{display:flex;align-items:center;gap:16px;margin-top:22px}
+.pager .dots{display:flex;gap:7px}
+.pager .dots i{width:9px;height:9px;border-radius:50%;background:var(--line);transition:all .35s var(--ease)}
+.pager .dots i.cur{background:var(--ink);width:24px;border-radius:5px}
+.pager .c{font-family:var(--display);font-size:17px;color:var(--ink-2);font-variant-numeric:tabular-nums;margin-left:auto}
+
+/* 4 recovery stages */
+.r4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:28px}
+.r4 div{border-radius:30px;padding:26px 24px;min-height:210px;display:flex;flex-direction:column;gap:6px;background:var(--mist);transition:background .45s var(--ease),color .45s var(--ease)}
+.r4 b{font-family:var(--display);font-weight:500;font-size:40px;letter-spacing:-.04em;line-height:1}
+.r4 span{margin-top:auto;font-size:21px;font-weight:800;letter-spacing:-.03em;line-height:1.3}
+.r4 small{font-family:var(--display);font-size:14px;color:var(--ink-3)}
+.r4 div.on{background:var(--sky)}
+.r4 div.gap{background:var(--yellow)}
+.r4-t{margin-top:26px;font-size:20px;line-height:1.65;font-weight:700;letter-spacing:-.02em;min-height:100px}
+
+/* matrix */
+.mx-top{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;margin-bottom:26px}
+.mx{display:grid;column-gap:4px;row-gap:6px;align-items:center}
+.mx .ph{font-size:13.5px;font-weight:800;color:var(--ink-2);text-align:center;border-bottom:2px solid var(--ink);padding-bottom:7px;line-height:1.3}
+.mx .ch{height:44px;font-family:var(--display);font-size:14px;color:var(--ink-3);text-align:center;border-radius:12px;transition:background .3s}
+.mx .ch.cur{background:var(--ink);color:var(--paper)}
+.mx .ch.k{font-family:var(--body);font-weight:700;font-size:14.5px;color:var(--ink-2)}
+.mx .ch.k.cur{color:var(--paper)}
+.mx .an{height:34px;font-size:16px;font-weight:700;text-align:left;padding-left:2px;color:var(--ink);transition:opacity .3s;white-space:nowrap}
+.mx .an.cur{color:var(--d3)}
+.mx .c{height:22px;border-radius:2px;transition:opacity .3s,background .3s}
+.mx .c.on{background:var(--d2)}
+.mx .c.via{background:repeating-linear-gradient(135deg,var(--d1) 0 3px,transparent 3px 8px);box-shadow:inset 0 0 0 1.5px var(--d1)}
+.mx .c.l{border-top-left-radius:11px;border-bottom-left-radius:11px}
+.mx .c.r{border-top-right-radius:11px;border-bottom-right-radius:11px}
+.mx .na{grid-column:span 4;height:22px;font-size:13.5px;color:var(--ink-3);display:flex;align-items:center;padding-left:12px;border-radius:11px;background:var(--mist)}
+.mx.dim .an:not(.cur),.mx.dim .c:not(.cur),.mx.dim .na:not(.cur){opacity:.22}
+.mx-out{margin-top:26px;min-height:64px;font-size:20px;line-height:1.55;font-weight:700;letter-spacing:-.02em}
+.mx-out small{display:block;font-size:15px;color:var(--ink-3);font-weight:600;margin-top:4px}
+.insl{margin-top:36px;border-top:1px solid var(--ink)}
+.insl li{display:grid;grid-template-columns:60px 1fr;gap:12px;padding:20px 0;border-bottom:1px solid var(--line);font-size:19px;line-height:1.55;font-weight:700;letter-spacing:-.02em;color:var(--ink-2)}
+.insl li b{font-family:var(--display);font-weight:500;color:var(--ink-3);font-size:16px;padding-top:3px}
+.insl li.key{color:var(--ink);font-size:22px;font-weight:800}
+.apps22{display:flex;flex-wrap:wrap;gap:8px 20px;font-size:18px;font-weight:700}
+.apps22 span.x{color:var(--ink-3);text-decoration:line-through;text-decoration-thickness:1.5px}
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.vs>div{min-width:0;border-top:2px solid var(--ink);padding-top:20px;display:grid;gap:10px;align-content:start}
+.vs .who{font-size:15px;font-weight:800;color:var(--ink-3)}
+.vs h4{font-size:22px;line-height:1.4}
+.vs p{font-size:16.5px;line-height:1.7;color:var(--ink-2)}
+.vs p b{color:var(--ink)}
+
+/* long tail */
+.lt{display:grid;grid-template-columns:1fr 250px;gap:44px;align-items:start}
+.lt>*{min-width:0}
+.ltb{display:grid;gap:7px}
+.ltb button{display:grid;grid-template-columns:190px 1fr 56px;gap:14px;align-items:center;height:30px}
+.ltb .nm{font-size:15.5px;font-weight:700;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ltb .br{height:16px;border-radius:0 8px 8px 0;background:var(--tail);transform-origin:left;transition:width .7s var(--ease),background .3s}
+.ltb .hd .br{background:var(--d2)}
+.ltb .hd .nm{color:var(--ink)}
+.ltb .v{font-family:var(--display);font-size:16px;font-variant-numeric:tabular-nums;color:var(--ink)}
+.ltb button.cur .br{background:var(--d4)}
+.lt-side{position:sticky;top:120px;display:grid;gap:8px}
+.lt-side b{font-family:var(--display);font-weight:500;font-size:84px;line-height:.9;letter-spacing:-.05em}
+.lt-side span{font-size:16px;line-height:1.5;color:var(--ink-2);font-weight:600}
+.lt-side .tip{margin-top:20px;padding-top:16px;border-top:1px solid var(--line);font-size:17px;font-weight:700;line-height:1.5;min-height:80px}
+.lt-side .tip small{display:block;font-size:13.5px;color:var(--ink-3);font-weight:600;margin-top:4px}
+.qv{margin-top:56px;display:grid;grid-template-columns:1fr auto;gap:20px;align-items:end;padding-top:30px;border-top:1px solid var(--line)}
+.qv p{font-size:28px;line-height:1.5;font-weight:800;letter-spacing:-.035em;min-height:126px}
+.qv small{display:block;margin-top:14px;font-size:15px;color:var(--ink-3);font-weight:600}
+.srcs{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:16.5px;font-weight:700;color:var(--ink-2)}
+.uses{display:grid;grid-template-columns:1fr 1fr;gap:36px 32px}
+.uses div{min-width:0}
+.uses h4{font-size:21px;margin-bottom:8px}
+.uses p{font-size:16.5px;line-height:1.7;color:var(--ink-2)}
+
+/* dots (survey) */
+.ask{display:grid;gap:20px}
+.ask .q{font-size:30px;line-height:1.4;font-weight:800;letter-spacing:-.035em}
+.ask .opts{display:flex;flex-wrap:wrap;gap:10px}
+.ask .opts button{height:58px;padding:0 24px;border-radius:29px;border:1.5px solid var(--ink);font-size:18px;font-weight:800;transition:background .3s,color .3s}
+.ask .opts button.cur{background:var(--ink);color:var(--paper)}
+.dotf{position:relative;height:236px;margin-top:40px}
+.dotf i{position:absolute;left:0;top:0;width:20px;height:20px;border-radius:50%;background:var(--tail);transition:transform .9s var(--ease),background .6s var(--ease)}
+.dotf i.me{box-shadow:0 0 0 3px var(--paper),0 0 0 6px var(--ink)}
+.dotl{position:relative;height:118px}
+.dotl div{position:absolute;top:0;display:grid;gap:2px;transition:left .9s var(--ease),opacity .4s}
+.dotl b{font-family:var(--display);font-weight:500;font-size:34px;letter-spacing:-.04em;line-height:1.05;font-variant-numeric:tabular-nums}
+.dotl span{font-size:15px;font-weight:700;color:var(--ink-2);line-height:1.35}
+.dotl em{font-style:normal;font-size:13.5px;color:var(--ink-3);font-weight:700}
+.dotl div.me b::after{content:"  당신과 같은 답";font-family:var(--body);font-size:14px;font-weight:800;letter-spacing:0;color:var(--d3)}
+.qtabs{margin-top:44px}
+.dot-cap{margin-top:30px;font-size:22px;line-height:1.55;font-weight:800;letter-spacing:-.03em;min-height:70px}
+.emo{display:grid;gap:14px}
+.emo button{display:grid;grid-template-columns:280px 1fr;gap:18px;align-items:center}
+.emo .nm{font-size:16.5px;font-weight:700;line-height:1.4;color:var(--ink-2)}
+.emo button.cur .nm{color:var(--ink)}
+.emo .st{display:flex;height:26px;gap:2px}
+.emo .st i{height:100%;transition:opacity .3s}
+.emo .st i:first-child{border-radius:4px 0 0 4px}.emo .st i:last-child{border-radius:0 4px 4px 0}
+.emo button:not(.cur) .st i{opacity:.55}
+.emo-out{margin-top:22px;font-size:17px;font-weight:700;color:var(--ink-2);min-height:28px;font-variant-numeric:tabular-nums}
+.corr{display:grid;grid-template-columns:1fr 230px;gap:44px;margin-top:30px;align-items:start}
+.corr>*{min-width:0}
+.cbars{display:grid;gap:16px}
+.cbars div{display:grid;grid-template-columns:150px 1fr 48px;gap:14px;align-items:center}
+.cbars span{font-size:16px;font-weight:700;color:var(--ink-2)}
+.cbars .tr{position:relative;height:18px;background:linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/33.333% 100%}
+.cbars .tr i{position:absolute;left:0;top:0;bottom:0;border-radius:0 9px 9px 0;background:var(--d2);transition:width .7s var(--ease)}
+.cbars b{font-family:var(--display);font-weight:500;font-size:19px;font-variant-numeric:tabular-nums;text-align:right}
+.cax{display:grid;grid-template-columns:150px 1fr 48px;gap:14px;margin-top:8px}
+.cax div{display:flex;justify-content:space-between;font-size:13px;color:var(--ink-3);font-weight:600}
+.stab{border-left:1px solid var(--line);padding-left:28px;display:grid;gap:6px}
+.stab b{font-family:var(--display);font-weight:500;font-size:80px;line-height:.9;letter-spacing:-.05em;font-variant-numeric:tabular-nums}
+.stab span{font-size:15.5px;color:var(--ink-2);font-weight:700;line-height:1.45}
+.big-quote{font-size:34px;line-height:1.45;font-weight:800;letter-spacing:-.04em;color:var(--ink-3)}
+.big-quote em{font-style:normal;color:var(--ink)}
+
+/* interview */
+.imx{display:grid;grid-template-columns:120px repeat(3,1fr);gap:8px}
+.imx .h{font-size:15px;font-weight:800;color:var(--ink-2);padding:6px 4px 10px;line-height:1.35}
+.imx .h small{display:block;font-family:var(--display);font-weight:500;font-size:22px;color:var(--ink)}
+.imx .rh{font-size:15px;font-weight:800;color:var(--ink-2);display:flex;align-items:center}
+.imx .cell{min-height:112px;border-radius:24px;background:var(--mist);padding:14px;display:flex;flex-wrap:wrap;gap:8px;align-content:flex-start}
+.imx .cell.no{background:transparent;border:1.5px dashed var(--line)}
+.imx .cell button{height:46px;padding:0 16px;border-radius:23px;background:var(--paper);font-family:var(--display);font-weight:500;font-size:18px;transition:background .3s,color .3s,transform .3s var(--spring)}
+.imx .cell button.cur{background:var(--ink);color:var(--paper);transform:scale(1.06)}
+.prof{margin-top:30px;border-top:2px solid var(--ink);padding-top:30px;display:grid;gap:30px}
+.prof .top{display:grid;grid-template-columns:auto 1fr;gap:24px;align-items:end}
+.prof .id{font-family:var(--display);font-weight:500;font-size:96px;line-height:.85;letter-spacing:-.06em}
+.prof .meta{font-size:17px;color:var(--ink-2);font-weight:700;line-height:1.6}
+.prof .meta b{display:block;font-size:22px;color:var(--ink);letter-spacing:-.03em}
+.prof .sum{font-size:23px;line-height:1.55;font-weight:800;letter-spacing:-.03em}
+.prof .two{display:grid;grid-template-columns:1fr 300px;gap:40px}
+.prof .two>*{min-width:0}
+.prof q{display:block;quotes:"“" "”";font-size:19px;line-height:1.7;color:var(--ink);font-weight:600}
+.prof q+q{margin-top:18px}
+.prof q::before{content:open-quote;color:var(--d2);font-weight:800}
+.prof q::after{content:close-quote;color:var(--d2);font-weight:800}
+.sv{display:grid;gap:12px}
+.sv>div{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;font-size:15px;font-weight:700;color:var(--ink-2)}
+.sv .lv{display:flex;gap:4px}
+.sv .lv i{width:14px;height:14px;border-radius:50%;background:var(--line)}
+.sv .lv i.f{background:var(--d2)}
+.sv>.kv{display:block;margin-top:8px;padding-top:12px;border-top:1px solid var(--line);font-size:15px;line-height:1.6;color:var(--ink-2);font-weight:600}
+.sv .kv b{color:var(--ink)}
+.ics{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ic{border:1px solid var(--line);border-radius:20px;padding:16px 18px;display:grid;gap:4px;font-size:15.5px;line-height:1.55;color:var(--ink-2)}
+.ic b{font-family:var(--display);font-weight:500;font-size:14px;color:var(--ink-3)}
+.shapes{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.shape{display:grid;gap:14px;align-content:start}
+.shape .s{height:120px;display:grid;place-items:center;padding:0 22px;font-size:15px;font-weight:700;line-height:1.45;text-align:center;color:var(--ink)}
+.shape .s.sp{border-radius:22px;background:var(--yellow)}
+.shape .s.sn{border-radius:60px;background:var(--mint)}
+.shape .s.se{background:var(--sky);clip-path:polygon(9% 0,100% 0,91% 100%,0 100%);padding:0 36px}
+.shape h4{font-size:21px}
+.shape p{font-size:15.5px;line-height:1.65;color:var(--ink-2)}
+.acc{border-top:1px solid var(--ink)}
+.acc>div{border-bottom:1px solid var(--line)}
+.acc button.hd{width:100%;display:grid;grid-template-columns:96px 1fr 44px;gap:12px;align-items:center;padding:22px 0;text-align:left}
+.acc .hd b{font-family:var(--display);font-weight:500;font-size:16px;color:var(--ink-3)}
+.acc .hd span{font-size:21px;font-weight:800;letter-spacing:-.03em}
+.acc .hd i{width:40px;height:40px;border-radius:50%;background:var(--mist);display:grid;place-items:center;transition:transform .4s var(--ease)}
+.acc .hd i svg{width:18px;height:18px}
+.acc .bd{display:grid;grid-template-rows:0fr;transition:grid-template-rows .45s var(--ease)}
+.acc .bd>div{overflow:hidden}
+.acc .bd p{padding:0 0 24px 108px;font-size:17px;line-height:1.7;color:var(--ink-2)}
+.acc>div.open .bd{grid-template-rows:1fr}
+.acc>div.open .hd i{transform:rotate(45deg)}
+
+/* cross */
+.flowd{position:relative}
+.flowd svg{width:100%;height:auto;display:block}
+.needs{border-top:1px solid var(--ink)}
+.needs>div{border-bottom:1px solid var(--line)}
+.needs .hd{width:100%;display:grid;grid-template-columns:72px 1fr 44px;gap:14px;align-items:center;padding:24px 0;text-align:left}
+.needs .hd b{font-family:var(--display);font-weight:500;font-size:40px;letter-spacing:-.04em;line-height:1;color:var(--ink-3);transition:color .3s}
+.needs .hd h4{font-size:25px}
+.needs .hd p{font-size:16.5px;color:var(--ink-2);margin-top:4px}
+.needs .hd i{width:40px;height:40px;border-radius:50%;background:var(--mist);display:grid;place-items:center;transition:transform .4s var(--ease)}
+.needs .hd i svg{width:18px;height:18px}
+.needs .bd{display:grid;grid-template-rows:0fr;transition:grid-template-rows .45s var(--ease)}
+.needs .bd>div{overflow:hidden}
+.needs .bd ul{display:grid;gap:8px;padding:0 0 26px 86px}
+.needs .bd li{display:flex;align-items:center;gap:12px;font-size:18px;font-weight:700}
+.needs .bd li i{width:12px;height:12px;border-radius:50%;background:var(--d2);flex:none}
+.needs>div.open .bd{grid-template-rows:1fr}
+.needs>div.open .hd i{transform:rotate(45deg)}
+.needs>div.open .hd b{color:var(--sky-edge)}
+.rules{display:grid;grid-template-columns:1fr 1fr;gap:34px 32px}
+.rules div{min-width:0}
+.rules h4{font-size:21px;margin-bottom:8px}
+.rules p{font-size:16.5px;line-height:1.7;color:var(--ink-2)}
+
+/* ───────── VISION ───────── */
+.vnav{display:flex;gap:2px;margin-left:12px}
+.vnav button{height:48px;padding:0 17px;border-radius:24px;font-family:var(--display);font-size:17px;font-weight:500;color:var(--ink-2)}
+.vnav button.cur{background:var(--ink);color:var(--paper)}
+.v-hero{position:relative;height:1120px;overflow:hidden;background:var(--sky)}
+.v-hero img{width:100%;height:100%;object-fit:cover;object-position:50% 0}
+.v-intro{padding:84px var(--m) 0;display:grid;gap:26px}
+.v-intro .h1{font-size:44px}
+.v-intro .enl{font-family:var(--display);font-size:21px;color:var(--ink-3);margin-top:-14px}
+.v-intro .p{font-size:20px;color:var(--ink);max-width:none}
+.team{display:flex;gap:40px;padding-top:24px;border-top:1px solid var(--line);font-size:16px;color:var(--ink-2);font-weight:600}
+.team b{display:block;font-size:19px;color:var(--ink);font-weight:800}
+.field{margin-top:128px;padding:110px var(--m) 110px}
+.field.mint{background:var(--mint)}
+.field.sky{background:var(--sky)}
+.field.yel{background:var(--yellow)}
+.field .big{font-size:56px;line-height:1.28;font-weight:800;letter-spacing:-.045em}
+.field .p{color:var(--ink);margin-top:36px;font-weight:500}
+.ins3{border-top:1px solid var(--ink);margin-top:40px}
+.ins3 li{display:grid;grid-template-columns:110px 1fr;gap:20px;padding:30px 0;border-bottom:1px solid var(--line)}
+.ins3 b{font-family:var(--display);font-weight:500;font-size:17px;color:var(--ink-3);padding-top:5px}
+.ins3 h4{font-size:27px;margin-bottom:8px}
+.ins3 p{font-size:17.5px;line-height:1.72;color:var(--ink-2)}
+.res-stage{position:relative;margin:48px calc(var(--m)*-1) 0;height:620px;overflow:hidden;background:var(--paper)}
+.res-stage .bg{position:absolute;inset:0;transition:none}
+.res-stage .bg2{position:absolute;inset:0;clip-path:circle(0 at 50% 50%)}
+.res-stage .ln{position:absolute;left:56px;right:56px;bottom:48px;aspect-ratio:1.98/1}
+.res-stage .ln button{position:absolute;transition:transform .55s var(--spring),opacity .4s}
+.res-stage .ln button img{width:100%;height:100%;object-fit:contain;pointer-events:none}
+.res-stage .ln button.up{transform:translateY(-28px)}
+.res-out{display:grid;grid-template-columns:1fr auto;gap:24px;align-items:end;margin-top:36px}
+.res-out .k{font-family:var(--display);font-size:17px;color:var(--ink-3)}
+.res-out h3{font-size:44px;line-height:1.15;margin-top:6px}
+.res-out p{font-size:21px;color:var(--ink-2);margin-top:12px;line-height:1.6}
+.res-pick{display:flex;gap:10px}
+.res-pick button{width:72px;height:72px;border-radius:50%;display:grid;place-items:center;border:2px solid transparent;transition:transform .35s var(--spring),border-color .3s}
+.res-pick button img{width:36px;height:36px}
+.res-pick button.cur{border-color:var(--ink);transform:scale(1.08)}
+.c-body{background:var(--sky)}.c-mind{background:var(--mint)}.c-leisure{background:var(--yellow)}.c-rel{background:var(--grad)}
+.demo{margin-top:44px;display:grid;grid-template-columns:1fr 360px;gap:28px}
+.demo>*{min-width:0}
+.inp{display:grid;gap:10px}
+.inp li{display:grid;grid-template-columns:28px 1fr auto;gap:16px;align-items:center;padding:20px 22px;border-radius:24px;border:1.5px solid var(--line);transition:border-color .4s var(--ease),background .4s var(--ease)}
+.inp li i{width:18px;height:18px;border-radius:50%;background:var(--line);transition:background .4s var(--ease),transform .4s var(--spring)}
+.inp li b{display:block;font-size:20px;letter-spacing:-.02em}
+.inp li span{font-size:15px;color:var(--ink-3);font-weight:600}
+.inp li em{font-style:normal;font-size:14px;font-weight:800;color:var(--ink-3);opacity:0;transition:opacity .3s}
+.inp li.on{border-color:var(--ink)}
+.inp li.on i{background:var(--d2);transform:scale(1.15)}
+.inp li.on em{opacity:1;color:var(--ink)}
+.rec{border-radius:34px;background:var(--ink);color:var(--paper);padding:34px 32px;display:flex;flex-direction:column;gap:14px}
+.rec small{font-size:15px;color:var(--sky);font-weight:800}
+.rec b{font-size:31px;line-height:1.3;letter-spacing:-.04em}
+.rec p{font-size:16.5px;line-height:1.65;opacity:.78;margin-top:auto}
+.story{margin-top:40px;display:grid;grid-template-columns:1fr 330px;gap:44px;padding-top:30px;border-top:1px solid var(--line)}
+.story>*{min-width:0}
+.story h3{font-size:28px;margin-bottom:14px}
+.story .p{font-size:18px}
+.story ol{border-top:1px solid var(--ink);counter-reset:s}
+.story li{counter-increment:s;display:grid;grid-template-columns:36px 1fr;gap:10px;padding:15px 0;border-bottom:1px solid var(--line);font-size:16px;line-height:1.55;color:var(--ink-2);font-weight:600}
+.story li::before{content:counter(s,decimal-leading-zero);font-family:var(--display);font-size:14px;color:var(--ink-3);padding-top:2px}
+.sys{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:44px}
+.sys>div{min-width:0;display:grid;gap:18px;align-content:start}
+.sys .ph{aspect-ratio:1/1;max-width:100%;border-radius:36px;overflow:hidden;background:var(--mist)}
+.sys .ph img{width:100%;height:100%;object-fit:cover}
+.sys .ph.app{background:var(--grad);display:grid;place-items:center}
+.sys .ph.app img{width:auto;height:88%;object-fit:contain;border-radius:28px}
+.sys .en{font-size:40px}
+.sys p{font-size:17px;color:var(--ink-2);font-weight:700}
+.jy{display:grid;grid-template-columns:400px 1fr;gap:56px;align-items:center;margin-top:48px}
+.jg{display:grid;grid-template-columns:1fr 1fr;gap:22px;width:400px}
+.jd{aspect-ratio:1/1;border-radius:50%;background:var(--mist);display:grid;place-items:center;text-align:center;transition:background .45s var(--ease),transform .45s var(--spring)}
+.jd:nth-child(2){border-bottom-right-radius:16px}
+.jd b{display:block;font-family:var(--display);font-size:15px;font-weight:500;color:var(--ink-3)}
+.jd span{display:block;font-size:20px;font-weight:800;letter-spacing:-.03em;line-height:1.3;margin-top:4px}
+.jd.cur{background:var(--sky);transform:scale(1.04)}
+.jd.cur b{color:var(--ink)}
+.jt .no{font-family:var(--display);font-weight:500;font-size:96px;line-height:.9;letter-spacing:-.06em}
+.jt h3{font-size:36px;margin-top:14px}
+.jt p{font-size:20px;color:var(--ink-2);margin-top:10px}
+.full{margin:48px calc(var(--m)*-1) 0}
+.full img{width:100%}
+.parts{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin-top:44px;border-top:2px solid var(--ink)}
+.parts div{padding:24px 0 0;display:grid;gap:4px}
+.parts b{font-family:var(--display);font-weight:500;font-size:56px;letter-spacing:-.05em;line-height:1}
+.parts span{font-size:17px;font-weight:700;color:var(--ink-2)}
+.sc{margin-top:40px}
+.sc .ph{position:relative;margin-top:24px;border-radius:40px;overflow:hidden;aspect-ratio:16/11;max-width:100%;background:#FAFAFA}
+.sc .ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:opacity .6s var(--ease)}
+.sc .ph img.contain{object-fit:contain}
+.sc .ph img.hide{opacity:0}
+.sc .cap2{margin-top:18px;font-size:19px;font-weight:700;min-height:32px}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
+.pair>*{min-width:0}
+.pair .ph{border-radius:40px;overflow:hidden;aspect-ratio:4/5;max-width:100%;background:var(--mist)}
+.pair .ph img{width:100%;height:100%;object-fit:cover}
+.banner{margin:44px calc(var(--m)*-1) 0;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;overscroll-behavior-x:contain}
+.banner::-webkit-scrollbar{display:none}
+.banner .in{position:relative;width:1800px;height:1067px}
+.banner .in img{width:100%;height:100%}
+.banner .snap{position:absolute;top:0;width:1px;height:1px;scroll-snap-align:center}
+.app-t{margin-top:34px;display:grid;gap:24px}
+.app-t .tx{display:grid;grid-template-columns:1fr 1fr;gap:40px}
+.app-t .tx>*{min-width:0}
+.app-t h3{font-size:31px}
+.app-t .flow{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center;margin-top:18px;font-size:16px;font-weight:800}
+.app-t .flow i{font-style:normal;color:var(--ink-3);font-weight:600}
+.logo-st{position:relative;margin-top:44px;border-radius:40px;overflow:hidden;height:420px;border:1px solid var(--line)}
+.logo-st .lay{position:absolute;inset:0;display:grid;place-items:center;clip-path:circle(0 at 50% 50%)}
+.logo-st .lay.base{clip-path:none}
+.logo-st .lay img{width:520px}
+.logo-st .lay.w{background:var(--paper)}
+.logo-st .lay.d{background:var(--dark)}
+.logo-st .lay.g{background:var(--grad)}
+.colors{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin-top:44px}
+.sw .chip{height:260px;padding:26px;display:flex;align-items:flex-end;font-family:var(--display);font-weight:500;font-size:32px;letter-spacing:-.03em}
+.sw .meta{padding:18px 4px 0;font-family:var(--display);font-size:16px;line-height:1.6;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.sw .meta b{display:block;font-size:14px;color:var(--ink-3);font-weight:500}
+.gbar{height:110px;background:var(--grad);margin-top:28px}
+.vid{margin-top:44px;border-radius:36px;overflow:hidden;border:1px solid var(--line);aspect-ratio:16/9;max-width:100%}
+.vid video{width:100%;height:100%;object-fit:cover}
+.poster{margin-top:44px;display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:end}
+.poster img{border-radius:24px;width:100%}
+.film{position:relative;display:block;width:100%;margin-top:44px;border-radius:36px;overflow:hidden;aspect-ratio:16/9;max-width:100%;background:var(--dark)}
+.film img{width:100%;height:100%;object-fit:cover}
+.film .pl{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:128px;height:128px;border-radius:50%;background:var(--paper);display:grid;place-items:center;transition:transform .3s var(--spring)}
+.film:active .pl{transform:translate(-50%,-50%) scale(.94)}
+.film .pl svg{width:42px;height:42px;margin-left:6px}
+.end{margin-top:150px;padding:100px var(--m) 80px;background:var(--mist);display:grid;gap:30px}
+.end .en{font-size:74px;line-height:1}
+.end .row{display:flex;gap:12px;flex-wrap:wrap}
+
+.vplayer{position:absolute;inset:0;z-index:60;background:var(--dark);display:none;place-items:center}
+.vplayer.on{display:grid}
+.vplayer video{width:100%}
+.vplayer .x{position:absolute;right:28px;top:28px;width:64px;height:64px;border-radius:50%;background:var(--paper);display:grid;place-items:center}
+.vplayer .x svg{width:26px;height:26px}
+.idle{position:absolute;inset:0;z-index:80;display:grid;place-items:center;background:color-mix(in srgb,var(--paper) 88%,transparent);visibility:hidden;opacity:0;transition:opacity .4s var(--ease),visibility 0s linear .4s}
+.idle.on{visibility:visible;opacity:1;transition:opacity .4s var(--ease),visibility 0s}
+.idle .box{display:grid;justify-items:center;gap:22px;text-align:center}
+.idle svg{width:120px;height:120px}
+.idle b{font-size:30px;letter-spacing:-.03em}
+.idle span{font-size:18px;color:var(--ink-2)}
+
+/* ───────── VISION v3 ───────── */
+.vnav button{padding:0 14px}
+.hero{position:relative;height:1180px;overflow:hidden;background:var(--mist)}
+.hero .trk{display:flex;height:100%;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;overscroll-behavior-x:contain}
+.hero .trk::-webkit-scrollbar{display:none}
+.hero .sl{flex:0 0 100%;height:100%;scroll-snap-align:start;overflow:hidden;position:relative}
+.hero .sl img{width:100%;height:100%;object-fit:cover;object-position:50% 0;will-change:transform}
+.hero .sl img.ct{object-fit:contain;object-position:50% 50%}
+.hero-pg{display:flex;align-items:center;gap:18px;padding:22px var(--m) 0}
+.hero-pg .dots{display:flex;gap:7px}
+.hero-pg .dots i{width:9px;height:9px;border-radius:50%;background:var(--line);transition:all .35s var(--ease)}
+.hero-pg .dots i.cur{background:var(--ink);width:26px;border-radius:5px}
+.hero-pg .t{font-size:16px;font-weight:700;color:var(--ink-2)}
+.hero-pg .sp{flex:1}
+.day{position:relative;margin-top:110px}
+.day .stk{position:sticky;top:92px;height:1284px;display:flex;flex-direction:column;background:var(--paper)}
+.day .ph{position:relative;height:800px;overflow:hidden;background:var(--dark)}
+.day .ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transform:scale(1.07);transition:opacity .9s var(--ease),transform 1.8s var(--ease)}
+.day .ph img.on{opacity:1;transform:none}
+.day .tx{padding:40px var(--m) 0;display:grid;gap:24px;align-content:start}
+.day .prog{display:flex;gap:6px}
+.day .prog i{flex:1;height:3px;background:var(--line);transition:background .4s var(--ease)}
+.day .prog i.f{background:var(--ink)}
+.day .dcap{font-size:36px;line-height:1.46;font-weight:800;letter-spacing:-.04em;min-height:158px}
+.insx{display:grid;grid-template-columns:1fr 400px;gap:40px;margin-top:44px;align-items:start}
+.insx>*{min-width:0}
+.insx ol{border-top:1px solid var(--ink)}
+.insx li button{width:100%;display:grid;grid-template-columns:76px 1fr;gap:12px;padding:26px 0;border-bottom:1px solid var(--line);text-align:left}
+.insx li b{font-family:var(--display);font-weight:500;font-size:17px;color:var(--ink-3);padding-top:5px}
+.insx li h4{font-size:25px;color:var(--ink-3);transition:color .35s}
+.insx li p{font-size:16.5px;line-height:1.7;color:var(--ink-2);margin-top:6px;display:grid;grid-template-rows:0fr;transition:grid-template-rows .45s var(--ease)}
+.insx li p span{overflow:hidden}
+.insx li.cur h4{color:var(--ink)}
+.insx li.cur p{grid-template-rows:1fr}
+.stackph{position:relative;aspect-ratio:4/5;max-width:100%;border-radius:36px;overflow:hidden;background:var(--mist)}
+.stackph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transform:scale(1.05);transition:opacity .7s var(--ease),transform 1.2s var(--ease)}
+.stackph img.on{opacity:1;transform:none}
+.stackph img.ct{object-fit:contain;background:#FAFAFA}
+.jy2{display:grid;grid-template-columns:400px 1fr;gap:48px;align-items:start;margin-top:48px}
+.jy2 .stackph{aspect-ratio:4/3;margin-bottom:24px}
+.gal{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;margin:40px calc(var(--m)*-1) 0;padding:0 var(--m);scroll-padding:0 var(--m);overscroll-behavior-x:contain}
+.gal::-webkit-scrollbar{display:none}
+.gal figure{margin:0;flex:none;scroll-snap-align:start;display:grid;gap:12px}
+.gal figure button{display:block;border-radius:28px;overflow:hidden;background:var(--mist)}
+.gal figure img{height:var(--gh,560px);width:auto;max-width:none;transition:transform .5s var(--ease)}
+.gal figure button:active img{transform:scale(.98)}
+.gal figcaption{font-size:15px;font-weight:700;color:var(--ink-2)}
+.colorway{display:grid;grid-template-columns:1fr 300px;gap:40px;align-items:end;margin-top:40px}
+.colorway>*{min-width:0}
+.cw-st{position:relative;height:640px;border-radius:40px;background:var(--mist);overflow:hidden}
+.cw-st img{position:absolute;left:50%;bottom:48px;height:80%;width:auto;max-width:none;transform:translate(-50%,40px) scale(.94);opacity:0;transition:opacity .45s var(--ease),transform .7s var(--spring)}
+.cw-st img.on{opacity:1;transform:translate(-50%,0)}
+.cw-sw{display:grid;gap:14px}
+.cw-sw .row{display:flex;gap:12px}
+.cw-sw button{width:62px;height:62px;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(0,0,0,.06);transition:transform .35s var(--spring),box-shadow .3s}
+.cw-sw button.cur{box-shadow:0 0 0 3px var(--paper),0 0 0 5px var(--ink);transform:scale(1.06)}
+.cw-sw p{font-size:18px;font-weight:700;line-height:1.55;color:var(--ink-2)}
+.cw-sw b{display:block;font-size:24px;color:var(--ink);letter-spacing:-.03em}
+.core{display:grid;grid-template-columns:470px 1fr;gap:52px;align-items:center;margin-top:44px}
+.core>*{min-width:0}
+.bezel{position:relative;width:470px;height:470px;border-radius:50%;background:#DADFE3;padding:22px;box-shadow:inset 0 0 0 8px #EEF1F3}
+.bezel .scr{position:relative;width:100%;height:100%;border-radius:50%;overflow:hidden;background:#0B0B0C}
+.bezel .scr img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transform:scale(1.08);transition:opacity .5s var(--ease),transform .7s var(--ease)}
+.bezel .scr img.on{opacity:1;transform:none}
+.bezel .cam{position:absolute;top:10px;left:50%;width:12px;height:12px;margin-left:-6px;border-radius:50%;background:#2B2F33}
+.core .ctl{display:flex;align-items:center;gap:14px;margin-top:28px}
+.core .ctl .dots{display:flex;gap:7px}
+.core .ctl .dots i{width:9px;height:9px;border-radius:50%;background:var(--line);transition:all .35s var(--ease)}
+.core .ctl .dots i.cur{background:var(--ink);width:24px;border-radius:5px}
+.core .now{font-size:26px;line-height:1.45;font-weight:800;letter-spacing:-.03em;min-height:76px;margin-top:20px}
+.appx{display:grid;grid-template-columns:400px 1fr;gap:52px;align-items:center;margin-top:44px}
+.appx>*{min-width:0}
+.phone{position:relative;width:400px;height:868px;border-radius:66px;background:#141416;padding:13px;box-shadow:inset 0 0 0 2px #2A2A2E}
+.phone .scr{position:relative;width:100%;height:100%;border-radius:54px;overflow:hidden;background:var(--paper)}
+.phone .scr img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 0;transform:translateX(100%);transition:transform .55s var(--ease)}
+.phone .scr img.on{transform:none}
+.phone .scr img.out{transform:translateX(-28%)}
+.phone .isl{position:absolute;top:26px;left:50%;width:120px;height:34px;margin-left:-60px;border-radius:17px;background:#000;z-index:3}
+.appx .tabs2{display:grid;gap:0;border-top:1px solid var(--ink)}
+.appx .tabs2 button{display:grid;grid-template-columns:150px 1fr;gap:16px;align-items:baseline;padding:22px 0;border-bottom:1px solid var(--line);text-align:left}
+.appx .tabs2 b{font-family:var(--display);font-weight:500;font-size:24px;letter-spacing:-.02em;color:var(--ink-3);transition:color .3s}
+.appx .tabs2 span{font-size:18px;font-weight:800;color:var(--ink-3);letter-spacing:-.02em;transition:color .3s}
+.appx .tabs2 button.cur b,.appx .tabs2 button.cur span{color:var(--ink)}
+.appx .desc{margin-top:26px;font-size:17.5px;line-height:1.75;color:var(--ink-2);min-height:150px}
+.end2{margin-top:150px;position:relative}
+.end2 .ph{height:900px;overflow:hidden}
+.end2 .ph img{width:100%;height:100%;object-fit:cover}
+.end2 .tx{padding:72px var(--m) 90px;background:var(--paper);display:grid;gap:28px}
+.end2 .en{font-size:72px;line-height:1}
+.end2 .row{display:flex;gap:12px;flex-wrap:wrap}
+.lb{position:absolute;inset:0;z-index:70;background:#141416;display:none}
+.lb.on{display:block}
+.lb .trk{display:flex;height:100%;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;overscroll-behavior:contain}
+.lb .trk::-webkit-scrollbar{display:none}
+.lb .sl{flex:0 0 100%;height:100%;scroll-snap-align:center;display:grid;place-items:center;padding:110px 36px 120px}
+.lb .sl img{max-width:100%;max-height:100%;object-fit:contain;border-radius:12px}
+.lb .x{position:absolute;right:28px;top:28px;width:64px;height:64px;border-radius:50%;background:var(--paper);display:grid;place-items:center;z-index:2}
+.lb .x svg{width:26px;height:26px}
+.lb .c{position:absolute;left:0;right:0;bottom:44px;text-align:center;color:var(--on-dark);font-size:17px;font-weight:700;font-variant-numeric:tabular-nums}
+.lb .c small{display:block;font-weight:600;opacity:.6;margin-top:4px}
+.rv{overflow:hidden}
+.rv img{transform:scale(1.08);transition:transform 1.4s var(--ease)}
+.rv.in img{transform:none}
+.parts2{display:grid;grid-template-columns:repeat(3,1fr);margin-top:44px;border-top:2px solid var(--ink)}
+.parts2 button{padding-top:24px;display:grid;gap:4px;text-align:left;opacity:.32;transition:opacity .35s var(--ease)}
+.parts2 button.cur{opacity:1}
+.parts2 b{font-family:var(--display);font-weight:500;font-size:56px;letter-spacing:-.05em;line-height:1}
+.parts2 span{font-size:17px;font-weight:700;color:var(--ink-2)}
+.part-ph{position:relative;margin-top:28px;height:560px;border-radius:40px;overflow:hidden;background:#F6F7F8}
+.part-ph .pp{position:absolute;inset:0;display:flex;gap:0;opacity:0;transform:translateY(16px);transition:opacity .5s var(--ease),transform .7s var(--ease)}
+.part-ph .pp.on{opacity:1;transform:none}
+.part-ph .pp img{flex:1;min-width:0;height:100%;object-fit:cover}
+.part-ph .pp.multi img{object-fit:contain;padding:30px}
+.jy2 .stackph{aspect-ratio:1/1}
+
+/* 제품 영상(자동 재생, 소리 없이) */
+.pfilm{position:relative;margin-top:44px;border-radius:36px;overflow:hidden;aspect-ratio:16/9;background:#fff;border:1px solid var(--line)}
+.pfilm video{display:block;width:100%;height:100%;object-fit:cover}
+.pf-snd{position:absolute;right:22px;bottom:22px;display:flex;align-items:center;gap:10px;height:56px;padding:0 24px 0 20px;border-radius:28px;background:rgba(255,255,255,.92);color:var(--ink);font-size:19px;font-weight:600;border:1px solid var(--line);transition:transform .3s var(--spring)}
+.pf-snd:active{transform:scale(.95)}
+.pf-snd svg{width:18px;height:18px}
+
+/* ───────── 공식 홈페이지(웹) ─────────
+   키오스크 스타일 위에 덧씌운다. 무대 크기는 fit()이 정하고, 내용은 가운데 칸(--cw)에 놓는다. */
+html,body{background:var(--paper)}
+body{-webkit-user-select:auto;user-select:auto;-webkit-touch-callout:default}
+#app{display:block;padding:0;background:var(--paper)}
+#stage{--bar:72px}
+#rs-scroll:focus,#ch-scroll:focus{outline:none}
+#rs-scroll::-webkit-scrollbar,#ch-scroll::-webkit-scrollbar{width:10px}
+#rs-scroll::-webkit-scrollbar-thumb,#ch-scroll::-webkit-scrollbar-thumb{background:rgba(40,40,40,.18);border-radius:5px}
+.rs-col,#ch-body{max-width:1032px;margin-inline:auto}
+.bar{padding-inline:max(24px,calc((100% - 1032px)/2))}
+.logo-a{display:block;flex:none}
+.logo-a .logo{height:24px;width:auto}
+a.ib,a.foot-nav{text-decoration:none;color:inherit}
+a.btn{text-decoration:none}
+
+#vbar{height:var(--bar);gap:24px;padding:0 max(32px,calc((100% - 1200px)/2));border-bottom:1px solid var(--line)}
+#vbar .logo-a{display:block;flex:none}
+#vbar .logo{height:24px}
+.vnav{gap:30px;margin:0 auto}
+.vnav a{font-family:var(--display);font-size:15px;font-weight:500;color:var(--ink-2);text-decoration:none;padding:6px 0;white-space:nowrap;transition:color .25s,box-shadow .25s}
+.vnav a:hover{color:var(--ink)}
+.vnav a.cur{color:var(--ink);box-shadow:inset 0 -2px 0 var(--sky-edge)}
+.pill{display:inline-flex;align-items:center;height:44px;padding:0 22px;border-radius:999px;background:var(--sky);color:var(--ink);font-size:15px;font-weight:700;white-space:nowrap;flex:none;transition:transform .25s}
+.pill:hover{transform:translateY(-2px)}
+.burger{display:none;margin-left:auto;width:42px;height:42px;border-radius:50%;background:var(--mist)}
+.burger i{display:block;width:16px;height:1.5px;background:var(--ink);margin:4px auto}
+.vprog{position:absolute;left:0;bottom:-1px;width:100%;height:2px;background:var(--sky-edge);transform-origin:0 50%;transform:scaleX(0)}
+.sheet{position:absolute;inset:0;z-index:65;background:var(--paper);padding:88px 24px 24px;display:flex;flex-direction:column;overflow-y:auto}
+.sheet[hidden]{display:none}
+.sheet a{font-family:var(--display);font-weight:500;font-size:38px;line-height:1.15;letter-spacing:-.04em;color:var(--ink);text-decoration:none;padding:12px 0;border-bottom:1px solid var(--line)}
+.sheet a span{font-family:var(--body);font-size:14px;font-weight:600;letter-spacing:0;color:var(--ink-2);margin-left:10px}
+.sheet .close{position:absolute;top:14px;right:16px;width:42px;height:42px;border-radius:50%;background:var(--mist);font-size:20px;text-align:center}
+
+.hero{height:min(calc(var(--cw)*1.1434),calc(var(--vh) - var(--bar) - 86px));background:var(--paper)}
+.hero .sl img{object-fit:contain;object-position:50% 50%}
+.day .stk{top:var(--bar);height:calc(var(--vh) - var(--bar))}
+.day .ph{flex:1;min-height:0;height:auto}
+.day .tx{padding:28px var(--m) 28px}
+.end2{margin-top:150px}
+.foot{display:flex;justify-content:space-between;gap:12px 32px;flex-wrap:wrap;padding:32px max(32px,calc((100% - 1200px)/2)) 36px;border-top:1px solid var(--line);font-size:13.5px;color:var(--ink-2)}
+.foot b{color:var(--ink);font-weight:700}
+
+/* 좁은 화면(440px 칸): 두 단을 한 단으로 */
+.narrow #stage{--m:24px;--bar:64px;font-size:17px}
+.narrow #vbar{padding:0 16px;gap:10px}
+.narrow #vbar .logo{height:21px}
+.narrow .vnav{display:none}
+.narrow #vbar .pill{margin-left:auto;height:40px;padding:0 16px;font-size:14px}
+.narrow .burger{display:block;margin-left:0;flex:none}
+.narrow .h1{font-size:33px}.narrow .h2{font-size:30px}.narrow .h3{font-size:25px}
+.narrow .p{font-size:17px}
+.narrow .sec{padding-top:88px}.narrow .sec.s{padding-top:60px}
+.narrow .v-intro{padding-top:52px;gap:20px}
+.narrow .v-intro .h1{font-size:33px}
+.narrow .v-intro .enl{font-size:17px}
+.narrow .v-intro .p{font-size:17px}
+.narrow .team{gap:22px;font-size:14px}.narrow .team b{font-size:17px}
+.narrow .hero .sl img{object-fit:cover;object-position:50% 0}
+.narrow .hero .sl img.ct{object-fit:contain;object-position:50% 50%}
+.narrow .hero-pg{padding-top:14px;gap:12px}
+.narrow .hero-pg .t{font-size:14px;min-width:0}
+.narrow .ib{width:46px;height:46px}
+.narrow .day{margin-top:64px}
+.narrow .day .dcap{font-size:25px;min-height:112px}
+.narrow .day .tx{gap:16px;padding-top:20px;padding-bottom:20px}
+.narrow .insx,.narrow .jy2,.narrow .colorway,.narrow .core,.narrow .appx,.narrow .demo,.narrow .story,.narrow .sys,.narrow .pair,.narrow .res-out{grid-template-columns:minmax(0,1fr)}
+.narrow .insx{gap:24px;margin-top:28px}
+.narrow .insx li button{grid-template-columns:44px 1fr;padding:20px 0}
+.narrow .insx li h4{font-size:21px}
+.narrow .jg{width:100%}
+.narrow .jy2{gap:28px;margin-top:32px}
+.narrow .gal{margin-top:28px;gap:12px}
+.narrow .gal figure img{height:calc(var(--gh,560px)*.6)}
+.narrow .res-stage{height:300px;margin-top:32px}
+.narrow .res-stage .ln{left:16px;right:16px;bottom:18px}
+.narrow .res-out h3{font-size:32px}.narrow .res-out p{font-size:17px}
+.narrow .res-pick button{width:60px;height:60px}
+.narrow .seg button{height:46px;padding:0 13px;font-size:15px}
+.narrow .seg .th{height:46px}
+.narrow .inp li{padding:16px;gap:12px}.narrow .inp li b{font-size:18px}
+.narrow .rec{padding:26px 24px}.narrow .rec b{font-size:26px}
+.narrow .sys{margin-top:28px}.narrow .sys .en{font-size:32px}
+.narrow .pfilm{margin-top:28px;border-radius:24px}
+.narrow .pf-snd{right:12px;bottom:12px;height:44px;padding:0 16px 0 14px;font-size:15px}
+.narrow .cw-st{height:430px;border-radius:28px}
+.narrow .parts2 b{font-size:38px}.narrow .parts2 span{font-size:14px}
+.narrow .part-ph{height:300px;border-radius:28px}
+.narrow .bezel{width:100%;max-width:380px;height:auto;aspect-ratio:1/1;margin:0 auto}
+.narrow .core .now{font-size:22px}
+.narrow .phone{width:320px;height:694px;border-radius:54px;margin:0 auto;padding:11px}
+.narrow .phone .scr{border-radius:44px}
+.narrow .phone .isl{top:21px;width:96px;height:28px;margin-left:-48px}
+.narrow .appx .tabs2 button{grid-template-columns:110px 1fr;padding:16px 0}
+.narrow .appx .tabs2 b{font-size:20px}.narrow .appx .tabs2 span{font-size:16px}
+.narrow .end2{margin-top:96px}
+.narrow .end2 .ph{height:520px}
+.narrow .end2 .tx{padding:44px var(--m) 56px;gap:22px}
+.narrow .end2 .en{font-size:44px}
+.narrow .foot{padding:24px var(--m) 30px;flex-direction:column;font-size:13px}
+.narrow .lb .sl{padding:84px 12px 96px}
+.narrow .lb .x{top:14px;right:14px;width:48px;height:48px}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition-duration:.01ms!important}
+}
+</style>
+</head>
+<body>
+<div id="app">
+<div id="stage">
+<section class="view" id="v-research" aria-label="리서치">
+  <div class="scroll" id="rs-scroll">
+    <header class="bar">
+      <a class="logo-a" href="./" aria-label="COMMA 공식 홈페이지"><img class="logo" src="assets/brand/logo-h.svg" alt="COMMA"></a>
+      <span class="title">Research</span>
+      <span class="sp"></span>
+      <a class="btn ghost" href="./">공식 홈페이지<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    </header>
+    <div class="rs-col">
+    <div class="rh">
+      <h1 class="h1">우리는 일상에서 어떻게 쉬고,<br>무엇을 통해 회복하고 있을까요?</h1>
+      <p class="p">COMMA는 청년들의 일상과 회복 경험을 이해하기 위해 문헌 조사, 디지털 에스노그라피, 설문조사, 심층 인터뷰를 진행했습니다. 사용자들이 자신의 상태를 어떻게 인식하고, 어떤 활동에서 회복을 경험하며, 회복을 실천하는 과정에서 무엇을 어려워하는지 살펴보았습니다.</p>
+    </div>
+    <div class="concept">
+      <div class="k">Burnout<br>Syndrome</div>
+      <div>
+        <h3>번아웃이 만연한 시대의 일상 회복 솔루션</h3>
+        <p>건강한 삶을 지속하기 위한 규칙적인 생활 습관과 정서적 안정은 신체적 회복력과 정신적 자존감을 유지하기 위해 반드시 필요하지만, 현대 청년층은 고착화된 번아웃과 불규칙한 생활 패턴, 심리적 불안정 속에서 스스로의 일상을 유지하는 데 한계가 분명하다.</p>
+      </div>
+    </div>
+    <div class="proc">
+      <h2 class="h2">여섯 단계로 진행했어요</h2>
+      <div class="track6" id="track6"><span class="fill" id="t6fill"></span></div>
+      <div class="groups"><div>Desk Research</div><div>User Research</div><div>Analysis</div></div>
+      <div class="preview" id="preview"></div>
+    </div>
+    <div class="ins-end">
+      <h2 class="h2">회복의 모습은 사람마다 다릅니다.</h2>
+      <ol>
+        <li><b>01</b><div><h4>나의 상태를 이해하는 것</h4><p>회복은 자신의 몸과 마음이 보내는 변화를 알아차리는 것에서 시작됩니다. 현재 자신의 상태와 일상 패턴을 돌아볼 수 있어야 합니다.</p></div></li>
+        <li><b>02</b><div><h4>나에게 맞는 회복을 선택하는 것</h4><p>누구에게나 같은 회복 방법이 필요한 것은 아닙니다. 각자의 취향과 생활 환경, 현재 상황을 고려해 자신에게 적합한 활동을 선택할 수 있어야 합니다.</p></div></li>
+        <li><b>03</b><div><h4>작은 회복을 일상에서 이어가는 것</h4><p>회복이 일회성 활동으로 끝나지 않도록, 자신에게 도움이 되었던 경험을 돌아보고 생활 속에서 다시 실천할 수 있는 구조가 필요합니다.</p></div></li>
+      </ol>
+      <a class="btn" href="./">COMMA 공식 홈페이지로 가기<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    </div>
+  </div>
+  </div>
+</section>
+
+<!-- ═════════ RESEARCH CHAPTER ═════════ -->
+<section class="view" id="v-chapter" aria-label="리서치 상세">
+  <div class="scroll" id="ch-scroll">
+    <header class="bar">
+      <button class="ib" data-go="research" aria-label="리서치 목차"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+      <span class="title" id="ch-title">Research</span>
+      <span class="sp"></span>
+      <div class="cdots" id="cdots"></div>
+      <a class="ib" href="./" aria-label="COMMA 공식 홈페이지"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg></a>
+    </header>
+    <div id="ch-body"></div>
+  </div>
+</section>
+
+
+<div id="wipe"></div>
+</div>
+</div>
+<script>
+/* 리서치 데이터: Figma 졸전_제품시스템디자인-1 · Deep Research 덱(2026. 04. 29.) 원문. 정리본은 작업/research_content.md */
+window.DATA={
+res:[ /* DOT 화면 속 기호 기준. 위치는 라인업 이미지 비율 */
+ {k:'relation',ko:'관계 자원',en:'Social Resource',d:'사람과 연결되며 얻는 지지와 소속감을 위한 자원',c:'c-rel',bg:'var(--grad)',pos:[0,9.38,20.82,73.23]},
+ {k:'leisure',ko:'여가 자원',en:'Recreational Resource',d:'자신의 선택으로 취향과 즐거움을 누리는 여유를 위한 자원',c:'c-leisure',bg:'var(--yellow)',pos:[23.34,5.15,23.22,85.38]},
+ {k:'mind',ko:'정서 자원',en:'Emotional Resource',d:'감정을 알아차리고 마음을 안정시킬 수 있는 여유를 위한 자원',c:'c-mind',bg:'var(--mint)',pos:[47.81,0,28.08,100]},
+ {k:'body',ko:'신체 자원',en:'Physical Resource',d:'몸을 움직이고 쉬며 일상을 이어갈 여유를 위한 자원',c:'c-body',bg:'var(--sky)',pos:[78.25,8.62,21.71,75.15]}],
+chapters:[
+ {id:'literature',en:'Literature Review',ko:'문헌 조사',short:'문헌 조사',num:'8',unit:'편의 논문',hook:'번아웃은 갑자기 오지 않아요. 단계 구조와 개입 시점, 재발 방지를 다룬 논문 8편을 읽었어요.'},
+ {id:'competitor',en:'Competitor Analysis',ko:'경쟁사 분석',short:'경쟁사 분석',num:'22',unit:'개의 앱',hook:'마인드케어 앱을 직접 써 보며 번아웃과 회복의 어느 단계에 개입하는지 표로 그렸어요.'},
+ {id:'uservoice',en:'User Voice',ko:'유저 보이스 크롤링',short:'유저 보이스',num:'327',unit:'개의 발화',hook:'블로그와 커뮤니티에 남겨진 번아웃 이야기를 모아 감정, 극복 시도, 반복 행동으로 나눴어요.'},
+ {id:'survey',en:'Survey',ko:'설문 조사',short:'설문',num:'65',unit:'명의 청년',hook:'만 19~39세 청년 65명의 일상. 번아웃은 아니라고 답하지만, 버티듯 하루를 보내고 있었어요.'},
+ {id:'interview',en:'In-depth Interview',ko:'심층 인터뷰',short:'심층 인터뷰',num:'9',unit:'명의 인터뷰이',hook:'자기 인식과 감정 상태가 서로 다른 9명을 만나 번아웃이 시작되고 이어지는 이야기를 들었어요.'},
+ {id:'crossdata',en:'Cross-Data Analysis',ko:'교차 데이터 분석',short:'교차 분석',num:'5',unit:'가지 데이터',hook:'다섯 가지 데이터를 겹쳐 번아웃의 원인과 패턴을 구조화하고, 사용자가 원하는 회복을 찾았어요.'}],
+stages:[['자신을 증명하려는 강박','과도한 야망과 의욕'],['더 열심히 일함','인정받기 위한 노력 강화'],['자신의 필요 무시','수면·여가·관계 소홀'],['갈등과 욕구의 억압','내면 신호 차단'],['가치관의 왜곡','일이 유일한 가치가 됨'],['부인','문제가 있음을 인식하지 못함'],['사회적 철수','관계 회피 심화'],['명백한 행동 변화','냉소·공격성·무관심'],['자기 자신과의 단절','자신이 낯설게 느껴짐'],['공허감','내면적 공허와 무감각'],['우울','무기력과 절망 상태'],['완전한 탈진','신체·정신·감정 고갈 상태']],
+papers:[
+ {n:'문헌 1',t:'번아웃은 피로가 아니라, 감정·관계·자기효능감이 함께 무너지는 3차원 구조다',d:'Maslach와 Leiter는 번아웃을 정서적 소진, 냉소, 자기효능감 저하가 누적되는 복합 증후군으로 정의한다. 세 차원 중 어느 하나만 해결되어도 완전한 회복으로 보기 어렵다. 사용자의 번아웃 유형을 파악해 맞춤형 개입을 제공하는 것이 유효하다.',c:'Maslach, C., & Leiter, M. P. (1997). The truth about burnout. Jossey-Bass.'},
+ {n:'문헌 2',t:'번아웃은 갑자기 오지 않는다. 12단계를 거쳐 점진적으로 심화되는 과정이다',d:'고갈 상태(11~12단계)에서 치료적 개입보다 4~7단계 조기 감지·개입이 훨씬 효과적이다. 반복적 행동 패턴(수면, 루틴, 감정 변화)을 추적해 사용자가 자각하기 전 신호를 포착하는 구조가 필요하다.',c:'Freudenberger, H. J., & Richelson, G. (1980). Burnout: The high cost of high achievement. Anchor Press.'},
+ {n:'문헌 3',t:'번아웃은 개인의 취약함이 아니라, 직무 요구와 자원 사이의 불균형에서 발생하는 시스템 문제다',d:'직무 요구는 높고 직무 자원은 낮을 때 에너지 소진이 일어난다. 사용자가 요구 수준을 인식하고 어떤 자원을 활성화할 수 있는지 파악하도록 돕는 구조가 지속 가능한 개입의 기반이다.',c:'Demerouti, E., Bakker, A. B., Nachreiner, F., & Schaufeli, W. B. (2001). Journal of Applied Psychology, 86(3), 499–512.'},
+ {n:'문헌 4 · 국내',t:'한국에서 번아웃은 과잉 헌신과 조직 맥락이 만나는 지점에서 형성되며, 대처는 관계적 지지와 자아 재인식을 통해 이루어진다',d:'자아인식 개선 없이 회피 전략만 반복하면 번아웃이 재발하는 순환이 생긴다. 단순 이완 기법보다 자기 인식과 사회적 연결 요소를 함께 다루는 설계가 필요하다.',c:'박수정 외. (2018). 한국형 번아웃 증후군 형성과정 및 대처방안에 관한 근거이론적 접근. 교육문화연구, 24(1), 159–174.'},
+ {n:'문헌 5 · 국내',t:'WHO 정의에 기반한 측정 도구로 소진·냉소·비효능감의 3차원 구조를 한국 노동자에게 검증했다',d:'KBOSS는 12문항, 7점 척도로 한국 노동자 444명을 대상으로 검증되었다. 간결한 구조는 디지털 서비스 안의 자가진단 도구로 통합하기에 적합하다.',c:"김유진 외. (2021). Development of Korean version burnout syndrome scale (KBOSS). Safety and Health at Work, 12(4), 508–515."},
+ {n:'문헌 6',t:'마인드풀니스 기반 개입은 정서 소진과 냉소를 줄이지만, 효과의 지속성은 지속적 실천 구조에 달려 있다',d:'개입이 끝나고 3개월이 지나면 효과가 줄어드는 패턴이 보고되었다. 프로그램에 참여하는 것과 실천이 이어지는 것은 다르다. 5~10분의 짧고 반복 가능한 형태가 스스로 루틴을 만드는 데 유효하다.',c:'Dou, J. 외. (2025). BMC Nursing, 24, 739.'},
+ {n:'문헌 7',t:'인지행동치료(CBT)와 마인드풀니스의 결합은 인지 패턴 변화와 자기조절 능력 향상을 함께 다룬다',d:"CBT는 번아웃을 유지하는 역기능적 사고('쉬면 안 돼', '나만 힘들면 실패')와 회피 행동을 직접 다룬다. 동기가 낮은 상태에서도 실행할 수 있는 작은 단위의 행동 과제가 중요하다.",c:'Young, P. 외. (2024). Mental Health Science, 1(4), e84.'},
+ {n:'문헌 8',t:'번아웃 회복은 4단계 과정이며, 지속 가능한 복귀를 위해서는 새로운 삶의 방식 설계가 필요하다',d:'대부분의 재활 프로그램은 1·2단계에 집중하고 3·4단계 지원은 거의 없어 재발률이 높다. 개입은 위기를 해소하는 도구가 아니라 3·4단계 전환을 지원하는 동반 구조여야 한다.',c:'Pijpker, R., Vaandrager, L., Veen, E. J., & Koelen, M. A. (2021). Work, 68(3), 551–561.'}],
+/* 경쟁사 매트릭스: 덱 p21·p23 그림에서 칸을 읽음. on=직접 개입, via=상담사 연결(외부 의존) */
+apps:[
+ ['디스턴싱',{on:[4,5,6,10,11,12]},{on:[2,4]}],
+ ['후유',{on:[3,4,5,6,10,11,12]},{on:[2,4]}],
+ ['마인들링',{on:[3,7,8,9,10,11,12]},{on:[2]}],
+ ['마음:온오프',{via:[3,4,5,6,7,8,9,10,11,12]},{on:[2]}],
+ ['트로스트',{via:[1,2,3,4,5,6,7,8,9,10,11,12]},{via:[1,2,3,4]}],
+ ['마인드위즈',{on:[10,11,12]},{on:[4]}],
+ ['피로몽',{on:[12]},{on:[2,4]}],
+ ['닥터리슨',{on:[6,7,8,9,10,11,12]},{on:[2,4]}],
+ ['마음:단단',{via:[1,2,3,4,5,6,7,8,9,10,11,12]},{via:[1,2,3,4]}],
+ ['무디',{on:[5,6,7,8,9,10,11,12]},{on:[2,3,4]}],
+ ['파노라',{on:[3,12]},{on:[1,2,4]}],
+ ['리빌리프',{on:[1,2,3,5,7,8,9,10,11,12]},{on:[2,4]}],
+ ['번아웃',{on:[12]},{na:'공감형 소통 커뮤니티 앱이라 해당 안 됨'}],
+ ['Headspace',{on:[3,7,8,9,10,11,12]},{on:[2,4]}],
+ ['inCare',{on:[10,11,12]},{on:[2,4]}],
+ ['MindDoc',{on:[3,10,11,12]},{on:[2,4]}],
+ ['Meditopia',{on:[3,10,11,12]},{on:[2]}]],
+lt:{
+ emo:{label:'감정',q:'번아웃이 왔을 때 사람들은 어떤 감정을 경험하는가?',total:151,share:'45.7',rows:[['무기력·무의욕',27,1],['공허함·무감각',22,1],['피로·소진',20,1],['우울·희망상실',16,1],['불안·공황',13],['짜증·분노',11],['죄책감·자책',9],['냉소·혐오',8],['의미상실',7],['소외·고립감',6],['자기실망·무능감',5],['자기상실',4],['신체화',4],['자기존재 혼돈',3]],
+  qs:[['입사한지 얼마 안된 신입입니다. 업무도 안맞고 사람도 힘들어서 죽겠는데... 닳고 닳은 배터리를 달고 하루하루 연명하는 것 같아요.','블라인드 커뮤니티'],['일요일 저녁만 되면 숨이 너무 막히고 가끔 퇴근하고 집에서 울기도 합니다','링커리어 커뮤니티'],['무얼 해도 재미없고, 무기력했다. 물을 잔뜩 먹은 미역처럼 축 쳐져','오마이뉴스 번아웃 극복기']]},
+ try:{label:'극복 시도',q:'번아웃을 극복하기 위해 어떤 시도를 하는가?',total:107,share:'45.8',rows:[['충분한 휴식·수면',22,1],['퇴사·이직·휴학',14,1],['운동·산책',13,1],['경계 설정·업무 감량',10],['심리상담·전문가 도움',9],['일기·기록',7],['명상·마음챙김',6],['관계·소통 회복',6],['루틴 재설계',5],['여행·완전 단절',4],['취미·관심사 회복',4],['우선순위 재정립',3],['직업·방향 전환',3],['자기이해·인식 전환',2]],
+  qs:[['이거는 그냥 외부와의 소통을 중단하고 하염없이 쉬는 것이 답','클리앙 커뮤니티'],['회사 3년차에 번아웃 심하게 와서 무턱대고 퇴직한담에 두달정도 쉬니까 괜찮아졌어요','클리앙 커뮤니티'],['하루 8시간 이상 주무시지 않으면.. 일단 8시간 잠자는 것부터 시도','클리앙 커뮤니티']]},
+ act:{label:'반복 행동',q:'번아웃 상태에서 어떤 행동 패턴이 반복되는가?',total:114,share:'50.9',rows:[['과로·자기착취',24,1],['사회적 고립',18,1],['집중력 저하·루틴 붕괴',16,1],['수면 장애',11],['감정 폭발·짜증 표출',10],['회피·결석',9],['신체 과부하 지속',8],['취미·운동 포기',7],['자극물·알코올 의존',5],['신체 붕괴',4],['자기기만·가면 쓰기',3]],
+  qs:[['단 한번도 일주일 이상 쉬어본적이 없었다','Velog 개인 블로그'],['가만히 휴식을 취해야 하는데 성격상 그러질 못하고 있다. 꾸역꾸역 계획한 일을 하고 있다.','Brunch 개인 에세이'],['클라이언트 갑질에 매번 12-1시 퇴근. 생산성 있는 야근이 아닌 짜치는 야근이 장기화','리멤버 커뮤니티']]}},
+/* 설문 N=65. 그룹 순서는 좋은 쪽 → 힘든 쪽 */
+survey:{
+ q2:{tab:'번아웃이라고 느끼나요?',g:[['전혀 아니다',9],['아니다',21],['잘 모르겠다',21],['그렇다',13],['매우 그렇다',1]],cap:'청년들은 스스로를 ‘번아웃’이라는 상태로 정의하지는 않지만, 그 이면에는 숨겨진 깊은 피로감으로 채워져 있다.'},
+ q4:{tab:'생활패턴',g:[['계획대로 활기차게 수행',11],['피로하지만 일상 루틴 소화',34],['의무는 하지만 개인 일상 방치',11],['최소 루틴조차 무너진 상태',9]],cap:'일상 루틴은 유지하고 있지만 피로를 느끼는 상태. 현재 생활패턴이 어느 정도 유지되고 있다고 느끼나요?'},
+ q5:{tab:'해야 할 일',g:[['비교적 잘 해내고 있음',17],['하긴 하지만 버거움',37],['자주 미루거나 일부만 수행',10],['거의 하지 못함',1]],cap:'해야 할 일은 수행하지만 버거움을 느끼며 버티는 수행 상태. 최근 1~2주 기준, 해야 할 일을 얼마나 수행하고 있나요?'},
+ grp:{tab:'네 집단',g:[['안정군',16],['피로누적군',25],['기능저하군',15],['붕괴위험군',9]],cap:'가장 큰 집단은 피로누적군(38.5%)으로, 겉으로는 기능하지만 내부적으로는 소진이 누적된 상태가 많다.'},
+ age:{tab:'연령',g:[['만 19~24세',33],['만 25~30세',28],['만 31~39세',4]],cap:'만 19세~39세 청년 총 65명이 약 7~10분 동안 응답했어요.',mono:1}},
+emo:[['아무것도 하기 싫은 무기력함',[7,18,27,13]],['이유 없이 불안하고 초조한 느낌',[6,19,23,17]],['해야 한다는 압박이 있지만 못 움직이는 느낌',[8,17,30,10]],['감정 자체가 잘 느껴지지 않고 무감각함',[8,11,12,34]],['갑자기 눈물이 나거나 감정이 폭발함',[2,6,11,46]]],
+corr:[['전혀 아니다',9,[1.67,2.11,2,1.67,1.33],3.78],['아니다',21,[1.86,1.86,2.24,1.33,1.19],3.67],['잘 모르겠다',21,[2.48,2.24,2.19,1.95,1.43],3.19],['그렇다',13,[3,2.69,2.92,2.69,1.92],2.15],['매우 그렇다',1,[4,4,4,4,2],2]],
+people:{
+ 'I-01':{job:'학사 과정 재학 중',age:'만 22세',home:'1인 가구 (자취)',rec:'△',emo:'불안정',sum:'겉으로는 버티는 양상이 있으나, 실제로는 감정 불안정과 실행 부담이 함께 나타나는 사례',sv:[2,3,3,3,3],stab:2,self:'잘 모르겠다',flow:'비슷한 상태를 유지하고 있다',
+  q:['항상 준비는 하고 시험 공부도 해야 한다는 의지도 있는데 막상 하려고 하면 손에 안 잡히고 다른 생각도 들고 그래요.','인간관계를 신경을 아예 안 쓰는 게 아니라서 진짜 잘 맞는 사람 한 명이 곁에 있었으면 좋겠어요.'],
+  ic:[['IC-004','해결된 것으로 간주했던 문제들이 반복적으로 재발하고 누적되면서 최종적인 번아웃을 유발함'],['IC-018','자기 전 정적인 환경에 혼자 있을 때 잡념이 심화되며, 이는 무기력감을 증폭시키는 요인이 됨'],['IC-007','과업 수행에 대한 의지는 존재하나, 실행 시점에서 지속적인 지연이 발생함'],['IC-052','상호 간의 깊은 이해와 신뢰를 바탕으로 한 유대 관계를 희망함']]},
+ 'I-02':{job:'학사 과정 재학 중',age:'만 24세',home:'부모님·형제·자매와 거주',rec:'×',emo:'불안정',sum:'일상 및 실행 저하가 크며 감정이 불안정하지만, 스스로는 번아웃으로 인식하지 않는 사례',sv:[2,4,4,4,4],stab:1,self:'전혀 아니다',flow:'번아웃·무기력함을 느끼지 않는다',
+  q:['저는 감정 부분에서 가장 먼저 나타났던 것 같아요. 뭔가 주위 사람이랑 얘기를 하고 싶지 않았고 뭔가 가장 가까운 사람들이랑도 좀 거리를 두고 싶어지는 마음이 들었습니다.','제가 정의한 번아웃은 뭔가 일이나 학업 이런 것 때문에 감정이 모두 소진되었다라는 생각이 들었을 때가 번아웃이라고 생각을 했는데 저는 딱히 그런 계기는 없었던 것 같아서 스스로 번아웃이 아니라고 생각했습니다.'],
+  ic:[['IC-066','평소 쉼 없이 열심히 살아왔으나, 작년 6월을 기점으로 무기력을 처음으로 체감함'],['IC-071','번아웃 이후 감정에서 변화가 먼저 나타났으며, 주변인과 대화를 거부하고 거리를 두려는 형태로 나타남'],['IC-136','대인관계 속 즐거움보다 미래의 일에 대한 걱정이 우선시되면서, 현재의 경험에 잘 몰입하지 못함'],['IC-139','일이나 학업으로 인한 정서적 고갈을 번아웃이라고 인식하고 있어, 현재 자신의 상태는 번아웃이 아니라고 생각함']]},
+ 'I-03':{job:'학사 과정 재학 중',age:'만 23세',home:'부모님·형제·자매와 거주',rec:'×',emo:'불안정',sum:'일상은 유지하지만 감정 상태나 생활패턴이 무너진 사례',sv:[2,3,2,1,2],stab:2,self:'아니다',flow:'좋아졌다 나빠졌다를 반복한다',
+  q:['운동하는 것도 좋아하고 춤추러 다니는 걸 되게 좋아하는데 바빠서 지금은 거의 못하는 것 같아요.','일상적인 일을 하긴 하는데 하는 게 힘들거나 하기 싫다는 생각이 강한 거지 아예 놓아버리지 않은 것 같아요.'],
+  ic:[['IC-165','운동과 춤 등 활동적인 취미를 즐겨 했으나, 현재는 일상적 바쁨으로 인해 활동들을 하지 못하고 있음'],['IC-178','번아웃을 극복하기 위해 하루를 온종일 비워놓고 집에서 잠을 자는 방법을 시도해봄'],['IC-199','힘들고 하기 싫다는 생각이 강하게 들지만, 일상적인 일은 해내고 있음'],['IC-198','번아웃 상황에서는 가까운 타인의 상황에 공감하기 어려워짐']]},
+ 'I-04':{job:'직장인 (4년차 이상)',age:'만 25세',home:'1인 가구 (자취)',rec:'○',emo:'불안정',sum:'상태를 스스로 문제로 인식하고 있으며, 기능 유지와 감정 불안정이 함께 나타나는 사례',sv:[3,3,2,2,1],stab:2,self:'그렇다',flow:'비슷한 상태를 유지하고 있다',
+  q:['성과가 나오는 사이드 프로젝트들 … 그런 거는 진짜 이 악물고 했는데, 그냥 단순히 취미 느낌으로 뭔가 하는 것들은 이제 도저히 못하겠더라고요.','제일 안 느껴지고 괜찮은 곳은 역시 운동할 때인 것 같고요. … 머리 비우고 아무 생각 안 들고 그냥 지금 있는 상황 그 자체에 집중하니까 …'],
+  ic:[['IC-237','회사 내 인간관계에서 발생한 구조적 갈등으로 인해 자신의 일에 대한 회의감이 생기고 업무에 대한 재미가 없어져 번아웃을 느끼게 됨'],['IC-261','번아웃은 지침을 유발, 단순 취미에 에너지를 쏟지 못하게 만듦'],['IC-270','번아웃·무기력함이 운동할 때 아무 생각도 안 하고 운동에 집중할 수 있기 때문에 가장 안 느껴짐'],['IC-293','기쁘지도 슬프지도 않은 둔한 상태, 무엇을 해도 만족감이 잘 느껴지지 않는 시기가 반복되고 있음']]},
+ 'I-05':{job:'학사 과정 재학 중',age:'만 19세',home:'친구·룸메이트와 거주',rec:'×',emo:'불안정',sum:'반복적 실행 저하가 나타나지만, 자기 인식은 이를 문제 상태로 명확히 규정하지 않는 사례',sv:[3,3,2,2,1],stab:2,self:'전혀 아니다',flow:'번아웃·무기력함을 느끼지 않는다',
+  q:['결과로 나왔을 때 문제를 인식했던 것 같아요. … 공부를 안 했다는 걸 결과로 숫자로 봤을 때 인식하게 된 것 같아요.','감정적으로 완전히 소진된 느낌이 들 때 보통 내 안에서 뭔가 감정을 생성할 수 있는 요인이 없으니까 항상 드라마나 OTT 같은 거 보면서 외부적인 데에서 억지로라도 뭔가 느끼려고 하는 편이라서 …'],
+  ic:[['IC-323','최근에는 무기력감이 실제 행동 중단까지 이어지지는 않지만, 마음속에서는 행동으로 옮기기 어려운 상태가 존재하는 것으로 보임'],['IC-324','무기력이나 회피를 감정 상태로 먼저 알아차리기보다, 성적처럼 숫자로 드러난 결과를 보고 나서야 문제로 인식함'],['IC-389','감정적으로 소진됐을 때 스스로 감정을 만들어내기 어렵고, 드라마나 OTT 같은 외부 자극을 통해 억지로라도 감정을 느끼려 한다고 말함'],['IC-418','부정적 상태가 진행 중일 때보다 사후 회고에서 문제를 더 잘 인식하는 경향이 있음']]},
+ 'I-06':{job:'석사·박사 과정 재학 중',age:'만 28세',home:'부모님·형제·자매와 거주',rec:'△',emo:'불안정',sum:'상태 해석이 모호하며, 흔들림과 회복 가능성이 함께 존재하는 사례',sv:[2,2,3,3,1],stab:2,self:'잘 모르겠다',flow:'좋아졌다 나빠졌다를 반복한다',
+  q:['가장 힘든 거는 오히려 새벽이 아니라 그렇게 긴 휴식을 취하고 일어났을 때인 것 같습니다. 예를 들면 12시에 일어났을 때 남들은 다 이제 점심 먹고 하루를 이미 시작한 지 4시간 5시간 6시간이 된 시점인데 나는 이제 일어나서 난 지금 뭐 하는 거지라는 그런 생각들이 올 때가 오히려 제일 힘들었던 것 같아요.','나는 버티는 건 잘하니까 아직 내가 좀 멘탈적으로 완전히 무너진 건 아니다라는 약간의 자기 진단을 더해서 그냥 좀 버텨보자 …'],
+  ic:[['IC-436','번아웃 시기에는 긍정적 사고조차 부담이 되어 상황에 대해 생각하는 것 자체를 피하게 됨'],['IC-447','번아웃 이후 관계 범위가 좁아지고, 긴장감을 주는 관계와의 접촉을 줄이려는 경향'],['IC-461','늦게 일어났을 때 느끼는 비교감과 뒤처짐을 더 힘들게 경험, 하루를 시작하기도 전에 이미 실패했다는 감각이 생김'],['IC-482','완전히 무너지지 않았다는 자기 진단을 근거로 도움 요청이나 회복 행동을 미룸']]},
+ 'I-07':{job:'석사·박사 과정 재학 중',age:'만 25세',home:'연인·배우자와 거주',rec:'△',emo:'불안정',sum:'일상 구조와 실행 양상에서 흔들림이 복합적으로 나타나는 사례',sv:[4,4,3,3,3],stab:2,self:'잘 모르겠다',flow:'좋아졌다 나빠졌다를 반복한다',
+  q:['혼자 아무것도 안 한 상태로 미루고 미루다가 유튜브 보다가 밤에 자기 직전에 결국 오늘 아무것도 안 했네 내일 해야지 할 때 … 그냥 큰일 났다 그런 느낌인 것 같은데 뭔가 그때 제일 큰 것 같아요.','이제 잠은 자야 되는데 하루 동안 아무것도 안 했는데 잠을 자면 또 아무것도 못하니까 어쩔 수 없이 또 하루가 지나갔구나라는 생각이 그때 크게 드는 것 같아요.'],
+  ic:[['IC-546','미루다가 아무것도 안 한 상태로 하루를 마무리하게 될 때 큰일났다는 위기감과 함께 무기력함이 가장 크게 느껴짐'],['IC-547','아무것도 하지 못한 상태에서 잠을 자야하는 상황이 오면 하루가 지나갔다는 생각과 함께 무력감과 후회가 느껴짐'],['IC-575','이전에 절약 중심의 생활을 했지만 귀찮음이 커지면서 비용을 지불하고 편함을 선택하는 방향으로 변함']]},
+ 'I-08':{job:'학사 과정 재학 중',age:'만 20세',home:'기숙사·회사 제공 숙소 등 공동 거주',rec:'△',emo:'상대적 안정',sum:'완전한 붕괴는 아니지만 반복적 흔들림이 나타나는 경계 사례',sv:[2,2,3,2,1],stab:3,self:'잘 모르겠다',flow:'좋아졌다 나빠졌다를 반복한다',
+  q:['원래 산책하는 거 좀 되게 좋아하고 하는데 번아웃 때는 그냥 어디에도 가기 싫고 그냥 혼자 있고 싶어가지고 그런 걸 잘 못하지 않았나 싶습니다.','좀 급하고 완벽주의자 성격이라 제 자신을 제가 좀 더 일부러 힘들게 하는 것 같아 가지고 좀 제 자신에 대해서 좀 이해해주면 좋을 것 같다는 생각이 듭니다.'],
+  ic:[['IC-633','평소 산책을 좋아했지만 번아웃 시기에는 어디도 가기 싫고 혼자 있고 싶어서 산책도 잘 못하게 됨'],['IC-642','아무것도 하지 않고 시간을 보내면 시간을 낭비했다는 느낌이 듦'],['IC-659','바쁠 때는 취미 활동을 미루고 해야할 일만 하게 됨'],['IC-686','급하고 완벽주의인 성격이 자신을 힘들게 만들지만 오래전부터 고착되어 있어 갑자기 바꾸기 어렵다고 인식하고 있음']]},
+ 'I-09':{job:'취업 준비 중',age:'만 29세',home:'1인 가구 (자취)',rec:'○',emo:'불안정',sum:'명확한 자기 인식, 감정 불안정, 일상 방치가 함께 나타나는 사례',sv:[3,3,4,4,2],stab:2,self:'그렇다',flow:'점점 나빠지고 있다',
+  q:["뭐 굉장히 자조적으로 하면 '니가 그렇지 뭐' 아니면 '넌 실패가 이젠 일상이지' 약간 이런 느낌으로 얘기를 하는 것 같습니다.",'평소에 번아웃이 오기 전에는 즐겨하던 취미들 독서를 한다든가 아니면 이제 책에서 좋은 문구 같은 걸 필사한다든가 이런 부분들을 전혀 하고 있지 않은 것 같습니다.'],
+  ic:[['IC-716','번아웃에서 벗어나기 위해 무언가를 시도하지만 개선되지 않는 상태가 반복되면서 악순환이 발생하고 번아웃이 점점 길어지고 있음'],['IC-730','평소 규칙적으로 하던 집안일을 번아웃 이후에는 몰아서 하게 됨'],['IC-737',"일이 잘 안 풀렸을 때 '니가 그렇지 뭐', '넌 실패가 이젠 일상이지' 같은 자조적인 말을 스스로에게 하는 편임"],['IC-742','또래나 후배들이 취직, 결혼, 출산 등 자리를 잡아가는 모습을 보면서 아직 자리를 잡지 못한 자신과 비교하며 부정적인 생각이 많아짐']]}},
+needs:[['자기 인식 / 자기 상태 파악','자신의 번아웃 상태와 신호를 스스로 파악하려는 니즈',['자기 상태 인식','자신의 상태를 이해']],
+ ['생활 리듬 및 루틴 회복','무너진 수면·식습관 등 기본 패턴을 되찾으려는 니즈',['무너진 생활 패턴 회복','일상 리듬 및 건강 관리','신체적 피로와 무너진 생활 리듬 회복']],
+ ['휴식 및 재충전','의무 없는 완전한 쉼과 심리적 여유에 대한 니즈',['의무 없는 휴식','온전한 휴식과 재충전','완전한 쉼 & 심리적 여유']],
+ ['자율성 및 주도권','스스로 선택하고 통제할 수 있는 삶을 회복하려는 니즈',['자기 결정권과 삶의 여유','주체적인 삶과 자율성 확보','스스로 선택하고 통제할 수 있는 삶']],
+ ['관계·정서적 연결','감정 소모 없이 안전하게 연결될 수 있는 관계에 대한 니즈',['감정적 안전망과 사회적 연결','정서적 유대와 깊은 인간관계','감정 소모 없는 관계에 대한 필요']]]
+};
+</script>
+<script>
+(function(){
+const D=window.DATA;
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const stage=$('#stage'), app=$('#app');
+const RM=matchMedia('(prefers-reduced-motion:reduce)').matches;
+const ARW='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+const PLUS='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>';
+const RAMP5=['var(--d1)','var(--d2)','var(--d3)','var(--d4)','var(--d5)'];
+const RAMP4=['var(--d1)','var(--d2)','var(--d4)','var(--d5)'];
+
+/* 무대를 창 크기에 맞춘다. 내용은 가운데 1032px 칸, 폭이 좁으면 440px 칸을 비율대로 줄인다. */
+const BAR=72;
+function fit(){
+  const vw=innerWidth, vh=innerHeight, narrow=vw<720, W=narrow?560:1032;
+  const z=vw<W?vw/W:1;
+  document.documentElement.classList.toggle('narrow',narrow);
+  stage.style.setProperty('--z',z.toFixed(4));
+  stage.style.width=(vw/z)+'px';
+  stage.style.height=(vh/z)+'px';
+  stage.style.setProperty('--vh',(vh/z)+'px');
+  stage.style.setProperty('--cw',Math.min(vw/z,1032)+'px');
+  stage.dataset.w=vw/z; stage.dataset.h=vh/z;
+}
+addEventListener('resize',fit); fit();
+function local(el){ /* element centre in stage units, whatever the zoom */
+  const s=stage.getBoundingClientRect(), r=el.getBoundingClientRect(), k=1/parseFloat(stage.style.getPropertyValue('--z')||1);
+  return {x:(r.left+r.width/2-s.left)*k, y:(r.top+r.height/2-s.top)*k};
+}
+/* swap text with a short fade */
+function swap(el,html){
+  if(RM||!el.innerHTML){el.innerHTML=html;return;}
+  el.classList.add('out'); clearTimeout(el._t);
+  el._t=setTimeout(()=>{el.innerHTML=html; el.classList.remove('out');},220);
+}
+/* segmented control with a sliding thumb */
+function seg(el,cb,start=0){
+  const th=$('.th',el), bs=$$('button',el);
+  function set(i,quiet){
+    bs.forEach((b,j)=>{b.classList.toggle('cur',i===j);b.setAttribute('aria-pressed',i===j);});
+    const b=bs[i]; if(!b) return; th.style.width=b.offsetWidth+'px'; th.style.transform=`translateX(${b.offsetLeft}px)`;
+    if(!quiet) cb(i);
+  }
+  bs.forEach((b,i)=>b.addEventListener('click',()=>set(i)));
+  requestAnimationFrame(()=>set(start,true)); cb(start);
+  el._set=set; el._fix=()=>set(bs.findIndex(b=>b.classList.contains('cur')),true);
+  return set;
+}
+
+/* ── views ── */
+const views={research:'#v-research',chapter:'#v-chapter'};
+let cur='research';
+function show(name,opt={}){
+  if(!views[name]) name='research';
+  $$('.view').forEach(v=>{v.classList.toggle('cut',!!opt.cut);v.classList.remove('on');});
+  const v=$(views[name]); v.classList.add('on'); cur=name;
+  const sc=$('.scroll',v); if(sc && !opt.keep) sc.scrollTop=0;
+    requestAnimationFrame(()=>$$('.seg',v).forEach(s=>s._fix&&s._fix()));
+  try{ history.replaceState(null,'',name==='research'?location.pathname:'#'+(opt.token||name)); }catch(e){}
+}
+/* colour wipe: a circle of the button's colour opens from where it was pressed */
+const WC={research:'var(--mint)',vision:'var(--sky)'};
+function wipe(name,from,run){
+  const go=run||(()=>show(name,{cut:true}));
+  if(RM){go();return;}
+  const w=$('#wipe'), p=local(from);
+  const r=Math.hypot(Math.max(p.x,(+stage.dataset.w)-p.x),Math.max(p.y,(+stage.dataset.h)-p.y))+4;
+  w.style.background=WC[name]||'var(--mist)'; w.style.opacity='1'; w.style.transition='none';
+  w.style.clipPath=`circle(0px at ${p.x}px ${p.y}px)`; w.classList.add('on');
+  w.getBoundingClientRect();
+  w.style.transition='clip-path .7s var(--ease)'; w.style.clipPath=`circle(${r}px at ${p.x}px ${p.y}px)`;
+  setTimeout(()=>{ go(); w.style.transition='opacity .45s var(--ease)'; w.style.opacity='0';
+    setTimeout(()=>{w.classList.remove('on');},460); },720);
+}
+document.addEventListener('click',e=>{
+  const w=e.target.closest('[data-wipe]'); if(w){ wipe(w.dataset.wipe,w); return; }
+  const g=e.target.closest('[data-go]'); if(g){ show(g.dataset.go); return; }
+});
+
+/* ── research hub ── */
+const t6=$('#track6'), pv=$('#preview');
+t6.insertAdjacentHTML('beforeend',D.chapters.map((c,i)=>`<button class="node" data-i="${i}"><i>0${i+1}</i><span>${c.short}</span></button>`).join(''));
+function hubPick(i){
+  const c=D.chapters[i];
+  $$('.node',t6).forEach((n,j)=>{n.classList.toggle('cur',j===i);n.classList.toggle('done',j<i);});
+  $('#t6fill').style.width=`calc(${i}/6*100%)`;
+  swap(pv,`<div><div class="en">${c.en}</div><div class="ko">${c.ko}</div></div>
+    <div class="num"><b>${c.num}</b><span>${c.unit}</span></div>
+    <p class="hook">${c.hook}</p>
+    <div class="go"><button class="btn" data-chap="${c.id}">자세히 보기${ARW}</button></div>`);
+}
+t6.addEventListener('click',e=>{const n=e.target.closest('.node'); if(n) hubPick(+n.dataset.i);});
+hubPick(0);
+document.addEventListener('click',e=>{const c=e.target.closest('[data-chap]'); if(c) openChapter(c.dataset.chap);});
+
+/* ── chapter shell ── */
+const cdots=$('#cdots');
+cdots.innerHTML=D.chapters.map((c,i)=>`<button data-chap="${c.id}" aria-label="${c.ko}"><i></i></button>`).join('');
+const CH={};
+function openChapter(id){
+  const i=D.chapters.findIndex(c=>c.id===id); if(i<0) return;
+  const c=D.chapters[i], nx=D.chapters[i+1];
+  $('#ch-title').textContent=c.en;
+  $$('button',cdots).forEach((b,j)=>b.classList.toggle('cur',j===i));
+  const body=$('#ch-body');
+  body.innerHTML=CH[id].html()+(nx
+    ?`<button class="foot-nav" data-chap="${nx.id}"><span><small>다음 · ${nx.ko}</small><b>${nx.en}</b></span>${ARW}</button>`
+    :`<a class="foot-nav" href="./"><span><small>리서치에서 출발한</small><b>COMMA 공식 홈페이지로 가기</b></span>${ARW}</a>`);
+  show('chapter',{token:id});
+  CH[id].init&&CH[id].init(body);
+  requestAnimationFrame(()=>$$('.seg',body).forEach(s=>s._fix&&s._fix()));
+}
+const head=(c,lead,purpose,method)=>`<div class="ch-h"><div class="en">${c.en}</div><div class="ko">${c.ko}</div><p class="lead">${lead}</p></div>
+  <div class="pm"><div><b>왜 했나요</b><p>${purpose}</p></div><div><b>어떻게 했나요</b><p>${method}</p></div></div>`;
+const chap=id=>D.chapters.find(c=>c.id===id);
+function acc(root){ root.addEventListener('click',e=>{const h=e.target.closest('button.hd'); if(h&&root.contains(h)) h.parentElement.classList.toggle('open');}); }
+
+/* 01 literature */
+CH.literature={html:()=>head(chap('literature'),'번아웃이 어떤 구조로 깊어지고, 언제 어떻게 개입해야 회복이 이어지는지 국내외 논문 8편에서 근거를 찾았어요.',
+  '번아웃 상황에서 효과적인 개입 방식을 탐색해보기 위함','번아웃 단계 구조, 번아웃의 효과적인 개입 방식(유형), 번아웃 재발 방지(지속성이나 동기 구조) 관련 문헌에 대해 조사 및 리서치')+`
+  <div class="mod"><div class="hd"><h2 class="h2">번아웃은 갑자기 오지 않아요</h2><p class="p">Freudenberger의 12단계 모델이에요. 점을 누르거나 손가락으로 밀어 보세요.</p></div>
+    <div class="s12-ph"><div>잠재적 위험 단계</div><div>붕괴 가시화 단계</div><div>확정적 번아웃 단계</div></div>
+    <div class="s12" id="s12"><span class="band e"></span><span class="band d"></span>${D.stages.map((s,i)=>`<button data-i="${i}" class="${i>=10?'dk':''}" aria-label="${i+1}단계 ${s[0]}"><i></i></button>`).join('')}</div>
+    <div class="s12-n" id="s12n">${D.stages.map((s,i)=>`<span>${i+1}</span>`).join('')}</div>
+    <div class="legend"><span><i style="background:var(--sky)"></i>4~7단계 · 조기 감지·개입이 훨씬 효과적인 구간</span><span><i style="background:var(--dark)"></i>11~12단계 · 고갈 상태</span></div>
+    <div class="s12-out swap" id="s12o"></div>
+    <p class="src">초기 단계(1~4)는 번아웃이 아니라 ‘높은 성과 상태’처럼 보이기 때문에 자각과 개입이 늦어지기 쉬움. 문헌 2</p></div>
+  <div class="mod"><div class="hd"><h2 class="h2">함께 읽은 논문 8편</h2></div>
+    <div class="car" id="car">${D.papers.map(p=>`<article class="pcard"><span class="n">${p.n}</span><h3>${p.t}</h3><p>${p.d}</p><p class="ct">${p.c}</p></article>`).join('')}</div>
+    <div class="pager"><div class="dots" id="cardots">${D.papers.map(()=>'<i></i>').join('')}</div><span class="c" id="carc">1 / 8</span></div></div>
+  <div class="mod"><div class="hd"><h2 class="h2">회복은 네 단계로 이어져요</h2><p class="p">Pijpker 외(2021)는 번아웃 재활 이후 실제로 복귀하고 유지하는 과정을 따라갔어요.</p></div>
+    <div class="seg" id="seg-r4"><span class="th"></span><button>프로그램이 다루는 단계</button><button>지원이 거의 없는 단계</button></div>
+    <div class="r4" id="r4"><div><b>1</b><span>위기 직면</span><small>Facing the crisis</small></div><div><b>2</b><span>근본 원인 해결</span><small>Addressing the root causes</small></div><div><b>3</b><span>기회 포착</span><small>Seizing the opportunity</small></div><div><b>4</b><span>직장 복귀 유지</span><small>Staying at work</small></div></div>
+    <p class="r4-t swap" id="r4t"></p></div>`,
+ init(b){
+  const s12=$('#s12',b), out=$('#s12o',b), nums=$$('#s12n span',b), bs=$$('button',s12);
+  let last=-1;
+  function pick(i){ if(i===last) return; last=i;
+    bs.forEach((x,j)=>x.classList.toggle('cur',j===i)); nums.forEach((x,j)=>x.classList.toggle('cur',j===i));
+    const z=i>=3&&i<=6?'<span class="z e">조기 감지·개입 구간</span>':i>=10?'<span class="z d">고갈 상태</span>':i<=3?'<span class="z">높은 성과 상태처럼 보이는 단계</span>':'';
+    swap(out,`<div class="no">${String(i+1).padStart(2,'0')}</div><div><h3>${D.stages[i][0]}</h3><p>${D.stages[i][1]}</p>${z}</div>`);
+  }
+  function at(e){ const r=s12.getBoundingClientRect(); const i=Math.floor((e.clientX-r.left)/r.width*12); pick(Math.max(0,Math.min(11,i))); }
+  s12.addEventListener('pointerdown',e=>{s12.setPointerCapture(e.pointerId);at(e);});
+  s12.addEventListener('pointermove',e=>{if(e.buttons||e.pressure>0) at(e);});
+  pick(3);
+  const car=$('#car',b), dots=$$('#cardots i',b), cc=$('#carc',b);
+  function cnt(){ const i=Math.round(car.scrollLeft/776); dots.forEach((d,j)=>d.classList.toggle('cur',j===i)); cc.textContent=`${i+1} / ${D.papers.length}`; }
+  car.addEventListener('scroll',()=>{clearTimeout(car._t);car._t=setTimeout(cnt,50);},{passive:true}); cnt();
+  const r4=$$('#r4 div',b), r4t=$('#r4t',b);
+  seg($('#seg-r4',b),i=>{
+    r4.forEach((d,j)=>{d.classList.toggle('on',i===0&&j<2);d.classList.toggle('gap',i===1&&j>=2);});
+    swap(r4t,i===0?'대부분의 재활 프로그램은 1·2단계에만 집중해요.':'3·4단계, 직장 복귀 이후의 지원이 거의 없어 번아웃 재발률이 높아요. 개입은 위기를 해소하는 도구가 아니라 3·4단계 전환을 지원하는 동반 구조여야 해요.');
+  });
+ }};
+
+/* 02 competitor */
+CH.competitor={html:()=>head(chap('competitor'),'마인드케어 앱 22개를 직접 써 보고, 번아웃과 관련성이 높은 17개가 번아웃과 회복의 어느 단계에 개입하는지 표로 그렸어요.',
+  '경쟁사 앱을 실제로 사용해보며 벤치마킹 포인트 및 한계를 구체적으로 파악하고 분석하기 위함','벤치마킹 포인트와 기능의 한계를 각각 카드로 정리하고, 사용자 데이터 수집 → 데이터 분석 및 제공 → 행동 유도와 솔루션 제공의 흐름을 정리')+`
+  <div class="mod"><div class="hd"><h2 class="h2">17개 앱은 어디에 개입할까요</h2><p class="p">앱 이름이나 단계를 누르면 그 줄만 남아요.</p></div>
+    <div class="mx-top"><div class="seg" id="seg-mx"><span class="th"></span><button>번아웃 12단계</button><button>회복 4단계</button></div>
+      <div class="legend" style="margin:0"><span><i style="background:var(--d2);border-radius:4px"></i>직접 개입</span><span><i style="background:repeating-linear-gradient(135deg,var(--d1) 0 3px,transparent 3px 7px);box-shadow:inset 0 0 0 1.5px var(--d1);border-radius:4px"></i>상담사 연결</span></div></div>
+    <div id="mx"></div>
+    <p class="mx-out swap" id="mxo"></p>
+    <ol class="insl swap" id="mxi"></ol>
+    <p class="src">덱 p.21·p.23의 매트릭스를 다시 그렸어요.</p></div>
+  <div class="mod"><div class="hd"><h2 class="h2">22개에서 17개로</h2><p class="p">번아웃과 관련성이 높은 마인드케어 앱 17개를 최종 분석 대상으로 골랐어요. 마인드카페는 공감형 소통 커뮤니티 앱이라 제외했어요.</p></div>
+    <div class="apps22">${['마인드위즈','피로몽','닥터리슨','마음:단단','무디','파노라','리빌리프','번아웃','Headspace','inCare','MindDoc','Meditopia','디스턴싱','후유','마인들링','마음:온오프','트로스트'].map(a=>`<span>${a}</span>`).join('')}${['Stand Up! The Work Break Timer','알라미','KB 올라케어','마인드카페','닥터다이어리'].map(a=>`<span class="x">${a}</span>`).join('')}</div></div>
+  <div class="mod"><div class="hd"><h2 class="h2">활용할 점과 넘어야 할 한계</h2></div>
+    <div class="vs">
+      <div><span class="who">KB 올라케어 · 생활밀착형 헬스케어</span><h4>캘린더 기능의 기록 및 회고성</h4><p><b>한계</b> 캘린더 기록은 정보 허브는 되지만 감정 해석은 약함. 번아웃 솔루션에서는 단순 기록을 넘어 “왜 지쳤는지”, “어떤 패턴이 반복되는지”를 읽어주는 해석 레이어가 필요하다.</p></div>
+      <div><span class="who">무디 · 대화 기반 감정 인터랙션</span><h4>캐릭터와의 대화로 감정을 자연스럽게 표현</h4><p><b>한계</b> 제시되는 솔루션이 “숨 쉬기” 등 매우 단순한 수준에 머물러 복잡한 감정이나 문제를 해결하기에는 한계가 있음.</p></div>
+      <div><span class="who">리빌리프 · 인지행동치료 기반 자기 탐색</span><h4>상태에 따라 깊이를 고르는 분기 구조</h4><p>“여기까지 충분해요(Lite)”와 “왜 이런 생각이 들었을까요(Deep)” 중에서 골라 현재 에너지 상태에 맞게 탐색 깊이를 조절할 수 있음.</p></div>
+      <div><span class="who">번아웃 · 공감형 소통 커뮤니티</span><h4>행동 변화로 이어지지 않는 구조</h4><p>“표현 → 공감”에서 멈추는 구조. 번아웃 글 → 공감 → 더 깊은 무기력처럼 감정이 강화되는 악순환 가능성.</p></div>
+    </div></div>`,
+ init(b){
+  const box=$('#mx',b), out=$('#mxo',b), ins=$('#mxi',b);
+  const INS=[['단발적인 솔루션 제공 - 번아웃 전체 단계를 케어해주는 서비스 부재','전체 단계를 아우르는 서비스의 경우 상담사 연결 등 외부 의존도가 높음','회복 가능성 및 효용성이 높은 조기 감지·개입 필요 시기를 케어하는 서비스 부재'],
+             ['사용자를 “능동적으로” 모니터링하는 서비스의 부재 → 수동적 개입이 대부분','능동적인 모니터링 솔루션의 경우, 전문가 상담과의 연결 등 외부 의존도가 높음','전체 회복 단계를 아우르는 서비스의 부재']];
+  let mode=0;
+  function draw(){
+    const n=mode?4:12, cols=mode?['상태 인식','원인 이해','해결 시도','지속적 관리']:Array.from({length:12},(_,i)=>i+1);
+    let h=`<div class="mx" style="grid-template-columns:150px repeat(${n},1fr)">`;
+    h+= mode?'<span></span>'+cols.map((c,j)=>`<button class="ch k" data-c="${j}">${c}</button>`).join('')
+            :'<span></span><div class="ph" style="grid-column:span 6">잠재적 위험</div><div class="ph" style="grid-column:span 3">붕괴 가시화</div><div class="ph" style="grid-column:span 3">확정적 번아웃</div><span></span>'+cols.map((c,j)=>`<button class="ch" data-c="${j}">${c}</button>`).join('');
+    D.apps.forEach((a,r)=>{
+      const v=a[mode+1];
+      h+=`<button class="an" data-r="${r}">${a[0]}</button>`;
+      if(v.na){h+=`<span class="na" data-r="${r}">${v.na}</span>`;return;}
+      const set=v.on||v.via, cls=v.on?'on':'via';
+      for(let j=1;j<=n;j++){
+        const hit=set.includes(j);
+        h+=`<span class="c ${hit?cls:''}${hit&&!set.includes(j-1)?' l':''}${hit&&!set.includes(j+1)?' r':''}" data-r="${r}" data-c="${j-1}" data-hit="${hit?1:0}"></span>`;
+      }
+    });
+    box.innerHTML=h+'</div>';
+    swap(out,mode?'앱이 직접 상태 인식에 개입하는 건 파노라 하나예요. 네 단계를 모두 다루는 건 상담사 연결에 기대는 트로스트와 마음:단단뿐이에요.<small>단계나 앱 이름을 눌러 보세요.</small>':'12단계에는 17개 앱이 모두 개입하지만, 1~2단계에 직접 개입하는 앱은 리빌리프 하나예요.<small>단계 번호나 앱 이름을 눌러 보세요.</small>');
+    swap(ins,INS[mode].map((t,i)=>`<li class="${i===2?'key':''}"><b>0${i+1}</b><span>${t}</span></li>`).join(''));
+  }
+  box.addEventListener('click',e=>{
+    const m=$('.mx',box); const t=e.target.closest('[data-r],[data-c]'); if(!t) return;
+    const isRow=t.classList.contains('an'), isCol=t.classList.contains('ch');
+    const already=t.classList.contains('cur');
+    $$('.cur',m).forEach(x=>x.classList.remove('cur')); m.classList.remove('dim');
+    if(already){ draw(); return; }
+    m.classList.add('dim');
+    if(isRow){ const r=t.dataset.r; $$(`[data-r="${r}"]`,m).forEach(x=>x.classList.add('cur'));
+      const a=D.apps[r], v=a[mode+1];
+      const lab=mode?['상태 인식','원인 이해','해결 시도','지속적 관리']:null;
+      const list=v.na?v.na:(v.on||v.via).map(j=>mode?lab[j-1]:j).join(mode?' · ':', ');
+      swap(out,`${a[0]}<small>${v.na?'':(v.via?'상담사 연결로 ':'')+ (mode?list:list+'단계')+(v.na?'':'에 개입')}${v.na?list:''}</small>`);
+    } else { const c=+(t.dataset.c); $$(`[data-c="${c}"]`,m).forEach(x=>x.classList.add('cur'));
+      const hits=D.apps.filter(a=>{const v=a[mode+1]; return !v.na&&((v.on||v.via).includes(c+1));});
+      $$('.an',m).forEach(x=>{ if(hits.includes(D.apps[x.dataset.r])) x.classList.add('cur'); });
+      $$('.c',m).forEach(x=>{ if(x.dataset.c==c && x.dataset.hit==='1') x.classList.add('cur'); });
+      const name=mode?['상태 인식','원인 이해','해결 시도','지속적 관리'][c]:(c+1)+'단계 · '+D.stages[c][1];
+      swap(out,`${name}<small>${hits.length}개 앱이 개입해요${hits.length?' · '+hits.map(a=>a[0]).join(', '):''}</small>`);
+    }
+  });
+  seg($('#seg-mx',b),i=>{mode=i;draw();});
+ }};
+
+/* 03 user voice */
+CH.uservoice={html:()=>head(chap('uservoice'),'블로그와 커뮤니티에 남겨진 번아웃 이야기 327개를 모아, 사람들이 실제로 무엇을 느끼고 무엇을 시도하는지 롱테일 그래프로 정리했어요.',
+  '번아웃 관련 사용자 발화를 수집·분석하여 사용자가 실제로 겪는 문제와 패턴을 파악하기 위함','세 가지 차원에서 유저 보이스를 웹 크롤링하고, 귀납적 내용 분석으로 주된 감정을 추출해 카테고리로 수렴')+`
+  <div class="mod"><div class="hd"><h2 class="h2" id="ltq"></h2></div>
+    <div class="seg" id="seg-lt" style="margin-bottom:34px"><span class="th"></span><button>감정 151</button><button>극복 시도 107</button><button>반복 행동 114</button></div>
+    <div class="lt"><div class="ltb" id="ltb"></div>
+      <div class="lt-side"><b id="lts"></b><span>상위 세 카테고리가 차지하는 비중</span><p class="tip swap" id="ltt"></p></div></div>
+    <div class="qv"><div><p class="swap" id="qvp"></p><small class="swap" id="qvs"></small></div><button class="ib" id="qvn" aria-label="다음 발화">${ARW}</button></div>
+    <p class="src">상위 세 카테고리는 덱에 적힌 개수예요. 나머지 막대는 덱의 그래프에서 읽은 대략값이라 숫자를 붙이지 않았어요.</p></div>
+  <div class="mod"><div class="hd"><h2 class="h2">어디에서 모았나요</h2></div>
+    <div class="srcs"><span>Velog · Brunch · Medium 개인 블로그</span><span>블라인드 · 리멤버 · 링커리어 · 마일모아</span><span>김박사넷 · KOSEN</span><span>트로스트</span><span>아하 · 닥터나우</span><span>오마이뉴스 · 매일신문</span><span>Mental Health UK · Luminate · YoungMinds</span><span>AJN · EMRA</span><span>Reddit 인용</span></div>
+    <p class="p" style="margin-top:26px;max-width:none">수집한 데이터는 웹사이트로 배포해, 그래프의 카테고리를 누르면 원문 발화를 바로 확인할 수 있게 했어요.</p></div>
+  <div class="mod"><div class="hd"><h2 class="h2">그래프로 읽은 것</h2></div>
+    <div class="uses">
+      <div><h4>공통 문제와 숨은 니즈를 함께</h4><p>헤드 영역은 다수가 반복적으로 경험하는 공통 문제를, 꼬리 영역은 적지만 놓치면 안 되는 세부 니즈를 보여줌.</p></div>
+      <div><h4>서비스 기회 영역의 근거</h4><p>감정 그래프는 어떤 정서 상태를 우선적으로 다뤄야 하는지, 행동 그래프는 어떤 패턴을 탐지하거나 예방해야 하는지, 해결 시도 그래프는 어떤 회복 지원 기능이 필요한지를 알려 줌.</p></div>
+      <div><h4>페르소나와 상태군 설계의 기반</h4><p>사용자 상태를 구조화하는 초기 프레임으로 사용할 수 있음.</p></div>
+      <div><h4>하나의 처방이 아닌 맞춤형 회복</h4><p>해결 시도가 매우 다양하게 나타난다는 점은, 번아웃 회복이 하나의 정답으로 해결되지 않는다는 사실을 보여줌.</p></div>
+    </div></div>`,
+ init(b){
+  const keys=['emo','try','act']; let k='emo', qi=0;
+  const bars=$('#ltb',b), tip=$('#ltt',b);
+  function draw(){
+    const L=D.lt[k], max=L.rows[0][1];
+    $('#ltq',b).textContent=L.q; $('#lts',b).textContent=L.share+'%';
+    bars.innerHTML=L.rows.map((r,i)=>`<button class="${r[2]?'hd':''}" data-i="${i}"><span class="nm">${r[0]}</span><span><i class="br" style="display:block;width:0"></i></span><span class="v">${r[2]?r[1]:''}</span></button>`).join('');
+    requestAnimationFrame(()=>requestAnimationFrame(()=>$$('.br',bars).forEach((x,i)=>x.style.width=(L.rows[i][1]/max*100)+'%')));
+    swap(tip,`${L.total}개 발화를 귀납적으로 분류했어요.<small>막대를 눌러 보세요</small>`);
+    qi=0; quote();
+  }
+  function quote(){ const q=D.lt[k].qs[qi%D.lt[k].qs.length]; swap($('#qvp',b),`“${q[0]}”`); swap($('#qvs',b),q[1]); }
+  bars.addEventListener('click',e=>{const t=e.target.closest('button'); if(!t) return;
+    $$('button',bars).forEach(x=>x.classList.toggle('cur',x===t));
+    const r=D.lt[k].rows[+t.dataset.i];
+    swap(tip,r[2]?`${r[0]}<small>${r[1]}개 발화</small>`:`${r[0]}<small>약 ${r[1]}개 발화 · 그래프에서 읽은 대략값</small>`);
+  });
+  $('#qvn',b).addEventListener('click',()=>{qi++;quote();});
+  seg($('#seg-lt',b),i=>{k=keys[i];draw();});
+ }};
+
+/* 04 survey */
+CH.survey={html:()=>head(chap('survey'),'만 19~39세 청년 65명에게 일상 루틴, 해야 할 일의 수행 정도, 최근 한 달의 감정을 물었어요.',
+  '2030세대 청년의 일상 실태 및 생활 흐름을 이해하고, 그에 따른 신체적·정서적 상태를 파악할 수 있는 기초 자료를 수집하기 위함','평소 일상·업무 실태, 신체·정서적 상태, 생활 습관 등에 대한 객관형 문항과 일부 서술형 문항으로 구성한 7~10분 분량의 설문')+`
+  <div class="mod"><div class="ask"><p class="q">먼저 물어볼게요.<br>스스로를 ‘번아웃 상태’라고 느끼나요?</p>
+      <div class="opts" id="opts">${D.survey.q2.g.map((g,i)=>`<button data-i="${i}">${g[0]}</button>`).join('')}</div></div>
+    <div class="dotf" id="dotf"></div><div class="dotl" id="dotl"></div>
+    <p class="dot-cap swap" id="dcap"></p>
+    <div class="qtabs"><div class="seg" id="seg-q"><span class="th"></span>${['q2','q4','q5','grp','age'].map(k=>`<button>${D.survey[k].tab}</button>`).join('')}</div></div>
+    <p class="src">점 하나가 응답자 한 명이에요. 네 집단은 생활패턴(Q4)과 해야 할 일 수행(Q5) 응답을 조합해 나눴어요.</p></div>
+  <div class="mod"><div class="hd"><h2 class="h2">최근 한 달, 얼마나 자주 느꼈나요</h2><p class="p">줄을 누르면 응답 수를 보여 줘요.</p></div>
+    <div class="legend" style="margin:0 0 24px">${['거의 매일','자주','가끔','거의 없음'].map((l,i)=>`<span><i style="background:${['var(--d5)','var(--d3)','var(--d2)','var(--tail)'][i]}"></i>${l}</span>`).join('')}</div>
+    <div class="emo" id="emo">${D.emo.map((e,i)=>`<button data-i="${i}"><span class="nm">${e[0]}</span><span class="st">${e[1].map((v,j)=>`<i style="flex:${v} 1 0;background:${['var(--d5)','var(--d3)','var(--d2)','var(--tail)'][j]}"></i>`).join('')}</span></button>`).join('')}</div>
+    <p class="emo-out swap" id="emoo"></p></div>
+  <div class="mod"><div class="hd"><h2 class="h2">번아웃이라고 느낄수록 부정적 감정이 함께 올라가요</h2><p class="p">스스로 번아웃이라고 느끼는 정도에 따라 다섯 집단으로 나눠 평균을 비교했어요.</p></div>
+    <div class="seg" id="seg-c"><span class="th"></span>${D.corr.map(c=>`<button>${c[0]}</button>`).join('')}</div>
+    <div class="corr"><div><div class="cbars" id="cb">${['무기력함','불안·초조','압박·못 움직임','무감각','감정 폭발'].map(n=>`<div><span>${n}</span><span class="tr"><i style="width:0"></i></span><b>-</b></div>`).join('')}</div>
+      <div class="cax"><span></span><div><span>거의 없음</span><span>가끔</span><span>자주</span><span>거의 매일</span></div><span></span></div></div>
+      <div class="stab"><b id="cst">-</b><span>감정 안정도<br>높을수록 안정</span><span class="cap" id="cn" style="margin-top:10px"></span></div></div>
+    <p class="big-quote" style="margin-top:72px">번아웃 상태는 감정이 폭발적으로 터지는 순간보다 <em>계속 아무것도 하기 싫고, 해야 하는데 못 움직이는 느낌</em>이 오래 지속되는 상태에 가까움</p>
+    <p class="src">감정 빈도는 거의 없음 1 · 가끔 2 · 자주 3 · 거의 매일 4로 바꿔 평균을 냈어요.</p></div>
+  <div class="mod"><p class="big-quote">청년층의 일상은 ‘번아웃’이라는 이름만 없을 뿐, 만성적인 무기력과 정서적 소모가 깊게 뿌리내린 ‘고도의 소진 상태’가 일상화되어 있음</p></div>`,
+ init(b){
+  const F=$('#dotf',b), Lb=$('#dotl',b), cap=$('#dcap',b);
+  F.innerHTML=Array.from({length:65},()=>'<i></i>').join('');
+  const dots=$$('i',F); let mine=null, curK='q2', answered=false;
+  const W=904, S=24, PER=6;
+  function idle(){ /* 13×5 neutral grid */
+    const G=32, x0=(W-13*G)/2;
+    dots.forEach((d,i)=>{const x=x0+(i%13)*G, y=40+Math.floor(i/13)*G; d.style.transform=`translate(${x}px,${y}px)`; d.style.background='var(--tail)'; d.classList.remove('me');});
+    Lb.innerHTML=''; swap(cap,'답을 고르면 65명의 응답이 펼쳐져요.');
+  }
+  function layout(k){
+    curK=k; const Q=D.survey[k], n=Q.g.length, colW=W/n;
+    const ramp=Q.mono?Q.g.map(()=> 'var(--d2)'):(n===5?RAMP5:RAMP4);
+    let idx=0; const H=228;
+    Q.g.forEach((g,gi)=>{
+      const cx=gi*colW+(colW-PER*S)/2;
+      for(let j=0;j<g[1];j++,idx++){
+        const d=dots[idx]; const col=j%PER, row=Math.floor(j/PER);
+        d.style.transform=`translate(${cx+col*S}px,${H-(row+1)*S}px)`; d.style.background=ramp[gi];
+        d.classList.toggle('me',k==='q2'&&mine===gi&&j===0);
+      }
+    });
+    Lb.innerHTML=Q.g.map((g,gi)=>`<div class="${k==='q2'&&mine===gi?'me':''}" style="left:${gi*colW+(colW-PER*S)/2}px;width:${Math.max(colW-12,120)}px"><b>${g[1]}</b><span>${g[0]}</span><em>${(g[1]/65*100).toFixed(1)}%</em></div>`).join('');
+    swap(cap,Q.cap);
+  }
+  $('#opts',b).addEventListener('click',e=>{const t=e.target.closest('button'); if(!t) return;
+    mine=+t.dataset.i; answered=true; $$('#opts button',b).forEach(x=>x.classList.toggle('cur',x===t));
+    $('#seg-q',b)._set(0);
+  });
+  seg($('#seg-q',b),i=>{const k=['q2','q4','q5','grp','age'][i]; if(!answered&&k==='q2'){idle();return;} answered=true; layout(k);});
+  idle();
+  const eb=$$('#emo button',b), eo=$('#emoo',b);
+  function emo(i){ eb.forEach((x,j)=>x.classList.toggle('cur',j===i)); const v=D.emo[i][1];
+    swap(eo,`${D.emo[i][0]} · 거의 매일 ${v[0]}명 · 자주 ${v[1]}명 · 가끔 ${v[2]}명 · 거의 없음 ${v[3]}명`); }
+  $('#emo',b).addEventListener('click',e=>{const t=e.target.closest('button'); if(t) emo(+t.dataset.i);}); emo(2);
+  const rows=$$('#cb>div',b);
+  seg($('#seg-c',b),i=>{ const c=D.corr[i];
+    rows.forEach((r,j)=>{ const v=c[2][j]; $('i',r).style.width=(v/4*100)+'%'; $('b',r).textContent=v; });
+    $('#cst',b).textContent=c[3]; $('#cn',b).textContent=c[1]===1?'이 집단은 1명의 응답이에요.':`${c[1]}명의 평균이에요.`;
+  },3);
+ }};
+
+/* 05 interview */
+CH.interview={html:()=>head(chap('interview'),'설문만으로는 보이지 않는 번아웃의 시작과 지속, 일상에 스며드는 방식을 듣기 위해 서로 다른 9명의 청년을 만났어요.',
+  '설문 조사를 통해 확인된 데이터의 통계적 유의미성을 바탕으로, 번아웃의 근본 원인을 심층 분석하고 효과적인 개입 방식을 얻기 위함','설문 응답자 중 참여 의사가 있는 21명에서 9명을 골라 화상으로 만났어요. 본 질문 773개, 꼬리 질문 295개를 나눴어요.')+`
+  <div class="mod"><div class="hd"><h2 class="h2">아홉 명은 이렇게 달랐어요</h2><p class="p">번아웃 여부만으로 나눈 집단이 아니라, 스스로의 인식과 감정 상태가 서로 다르게 조합된 사례들이에요. 사람을 눌러 보세요.</p></div>
+    <div class="imx" id="imx">
+      <span></span><div class="h">번아웃을 인정해요<small>○</small></div><div class="h">잘 모르겠어요<small>△</small></div><div class="h">번아웃은 아니에요<small>×</small></div>
+      <div class="rh">감정 불안정</div><div class="cell">${['I-04','I-09'].map(p=>`<button data-p="${p}">${p}</button>`).join('')}</div><div class="cell">${['I-01','I-06','I-07'].map(p=>`<button data-p="${p}">${p}</button>`).join('')}</div><div class="cell">${['I-02','I-03','I-05'].map(p=>`<button data-p="${p}">${p}</button>`).join('')}</div>
+      <div class="rh">감정 안정</div><div class="cell no"></div><div class="cell">${['I-08'].map(p=>`<button data-p="${p}">${p}</button>`).join('')}</div><div class="cell no"></div>
+    </div>
+    <div class="prof swap" id="prof"></div></div>
+  <div class="mod"><div class="hd"><h2 class="h2">발화를 분석할 수 있는 카드로</h2><p class="p">인터뷰 발화를 단순 기록이 아닌 분석 가능한 데이터로 전환하기 위해 세 가지 모양의 카드로 나눴어요.</p></div>
+    <div class="shapes">
+      <div class="shape"><div class="s sp">타인과의 교류로 심리적 스트레스가 발생하여, 이를 기피하는 양상이 나타남</div><h4>문제 Painpoint</h4><p>인터뷰이가 발화를 통해 직접 문제시한 부분. 불편함, 반복되는 실패, 감정적 고통, 회복 실패 등.</p></div>
+      <div class="shape"><div class="s sn">상호 간의 깊은 이해와 신뢰를 바탕으로 한 유대 관계를 희망함</div><h4>니즈 Needs</h4><p>“~했으면 좋겠다”, “~가 있으면 버틸 수 있다”처럼 욕구, 기대, 조건이 드러나는 발화.</p></div>
+      <div class="shape"><div class="s se">도움을 받는 것을 꺼리며, 외부의 전문적인 도움을 불필요한 것으로 간주함</div><h4>기타 Etc.</h4><p>가치관, 자기해석, 회복 방식, 트리거, 관계 맥락처럼 상태를 이해하는 데 중요한 발화.</p></div>
+    </div>
+    <p class="src">예시 카드 IC-028 · IC-052 · IC-044</p></div>
+  <div class="mod"><div class="hd"><h2 class="h2">질문은 이렇게 짰어요</h2></div>
+    <div class="acc" id="acc">
+      ${[['PART 1','번아웃에 대한 설명 및 인식 조사','본인 기준에서 번아웃이란 어떤 상태라고 생각하세요? ‘무기력하다’는 느낌은 번아웃과 다르다고 생각하시나요?'],
+         ['PART 2','직접 겪었던 무기력함·번아웃 증세','번아웃의 시작점, 일상 붕괴의 메커니즘, 감정과 자기해석, 시간대·공간·상황 맥락, 회복 시도와 실패, 도움 수용 방식을 차례로 물었어요.'],
+         ['PART 3','번아웃 스텝별 해당 사항','막연한 심리 상태를 번아웃 12단계 중 어느 지점에 머물러 있는지 구체적으로 파악해요. 이 상태가 문제일 수도 있다고 느끼면서도 ‘아직 괜찮다’고 생각하며 버틴 적이 있나요?'],
+         ['PART 4','건강 관련','지금 삶에서 ‘건강’을 포함해 우선순위를 5순위까지 꼽아주실 수 있을까요?'],
+         ['PART 5','희망하는 미래 이미지','지금 삶에서 가장 바꾸고 싶은 한 가지가 있다면 무엇인가요? 주변 사람이 내 상태에 대해 이것만은 알아줬으면 하는 게 있나요?']]
+        .map(a=>`<div><button class="hd"><b>${a[0]}</b><span>${a[1]}</span><i>${PLUS}</i></button><div class="bd"><div><p>${a[2]}</p></div></div></div>`).join('')}
+    </div></div>`,
+ init(b){
+  const pr=$('#prof',b), LV=['거의 없음','가끔','자주','거의 매일'], EM=['무기력함','불안·초조','압박·못 움직임','무감각','감정 폭발'];
+  function pick(id){
+    $$('#imx button',b).forEach(x=>x.classList.toggle('cur',x.dataset.p===id));
+    const p=D.people[id];
+    swap(pr,`<div class="top"><div class="id">${id}</div><div class="meta"><b>${p.job} · ${p.age}</b>${p.home}</div></div>
+      <p class="sum">${p.sum}</p>
+      <div class="two"><div>${p.q.map(q=>`<q>${q}</q>`).join('')}</div>
+        <div class="sv">${EM.map((n,i)=>`<div><span>${n}</span><span class="lv" aria-label="${LV[p.sv[i]-1]}">${[1,2,3,4].map(l=>`<i class="${l<=p.sv[i]?'f':''}"></i>`).join('')}</span></div>`).join('')}
+          <div class="kv">점이 많을수록 자주 느껴요<br>감정 안정 점수 <b>${p.stab}점</b><br>스스로 번아웃이라고 <b>${p.self}</b><br>요즘은 <b>${p.flow}</b></div></div></div>
+      <div class="ics">${p.ic.map(c=>`<div class="ic"><b>${c[0]}</b>${c[1]}</div>`).join('')}</div>`);
+  }
+  $('#imx',b).addEventListener('click',e=>{const t=e.target.closest('[data-p]'); if(t) pick(t.dataset.p);});
+  pick('I-06'); acc($('#acc',b));
+ }};
+
+/* 06 cross data */
+CH.crossdata={html:()=>head(chap('crossdata'),'문헌, 경쟁사, 웹 크롤링, 설문, 인터뷰 데이터를 한자리에 겹쳐 번아웃의 양상과 사용자가 원하는 해결, 서비스가 개입할 지점을 찾아갔어요.',
+  '사용자 발화와 다각적 데이터를 통합 분석하여 번아웃의 심층적 원인과 패턴을 구조화함으로써, 실질적인 문제 해결을 위한 본질적인 솔루션 인사이트를 도출','세 가지 축의 롱테일 그래프 키워드와 심층 인터뷰 카드를 조합해 클러스터링하고, 경쟁사 매트릭스와 겹쳐 차별점을 찾았어요.')+`
+  <div class="mod"><div class="hd"><h2 class="h2">다섯 가지 데이터를 겹쳤어요</h2></div>
+    <div class="flowd">${flowSVG()}</div></div>
+  <div class="mod"><div class="hd"><h2 class="h2">세 갈래의 분석이 가리킨 다섯 가지 니즈</h2><p class="p">세 번의 클러스터링에서 묶인 카드들이 공통으로 모이는 영역을 찾았어요. 니즈를 누르면 각 분석에서 붙인 이름이 보여요.</p></div>
+    <div class="needs" id="needs">${D.needs.map((n,i)=>`<div class="${i===0?'open':''}"><button class="hd"><b>${i+1}</b><span><h4>${n[0]}</h4><p>${n[1]}</p></span><i>${PLUS}</i></button><div class="bd"><div><ul>${n[2].map(x=>`<li><i></i>${x}</li>`).join('')}</ul></div></div></div>`).join('')}</div></div>
+  <div class="mod"><div class="hd"><h2 class="h2">분석하며 지킨 것</h2></div>
+    <div class="rules">
+      <div><h4>번아웃 경험은 사람마다 다른 양상으로 나타난다</h4><p>일부 발화만을 기준으로 빠르게 일반화하면 실제 사용자에게 도움이 되지 않는 피상적인 솔루션으로 이어질 위험이 있어요.</p></div>
+      <div><h4>발화 기반 클러스터링만으로는 충분하지 않다</h4><p>사용자 발화와 함께 관련 문헌, 데스크리서치, 기존 서비스 및 경쟁사 분석을 연결해 검증했어요.</p></div>
+      <div><h4>개별 사례와 공통 패턴을 동시에 본다</h4><p>개별 발화의 맥락을 훼손하지 않으면서도 반복되는 패턴을 도출했어요.</p></div>
+      <div><h4>정성적 코딩을 깊게</h4><p>발화 단위로 의미를 분해한 뒤 문제, 니즈, 기타 맥락으로 분류하고, 유사 카드 간 관계를 비교하며 상위 주제와 구조를 도출했어요.</p></div>
+    </div></div>
+  <div class="mod"><p class="big-quote">회복을 위해 필요한 것은 단순히 더 많은 휴식 시간이 아니라, <em>나에게 맞는 쉼을 발견하고 선택할 수 있는 경험</em>입니다.</p></div>`,
+ init(b){ acc($('#needs',b)); }};
+function flowSVG(){
+  const src=[['문헌 리서치','이론적 단계·정의'],['경쟁사 분석','솔루션이 다루는 니즈 영역'],['웹 크롤링','키워드 출현도 → 롱테일 그래프'],['설문조사','양적 유저 보이스 정량화'],['심층 인터뷰','발화를 원인·니즈에 매핑']];
+  const out=['번아웃이 왔을 때 양상','사용자가 얻고 싶은 솔루션','우리 서비스의 개입 포인트','시장에서의 차별화 포인트'];
+  const W=904,H=560,cx=470,cy=280;
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="다섯 가지 데이터가 통합 분석으로 모여 네 가지 질문으로 이어지는 도식">`;
+  src.forEach((t,i)=>{const y=40+i*120; s+=`<path d="M300 ${y+26} C 390 ${y+26}, 390 ${cy}, ${cx-46} ${cy}" fill="none" stroke="var(--line)" stroke-width="2"/>`;
+    s+=`<circle cx="292" cy="${y+26}" r="8" fill="var(--d2)"/><text x="0" y="${y+22}" font-size="21" font-weight="800" fill="var(--ink)" font-family="Wanted Sans, sans-serif">${t[0]}</text><text x="0" y="${y+48}" font-size="15" font-weight="600" fill="var(--ink-3)" font-family="Wanted Sans, sans-serif">${t[1]}</text>`;});
+  out.forEach((t,i)=>{const y=110+i*112; s+=`<path d="M${cx+46} ${cy} C 580 ${cy}, 580 ${y}, 640 ${y}" fill="none" stroke="var(--line)" stroke-width="2"/><circle cx="648" cy="${y}" r="8" fill="var(--ink)"/><text x="668" y="${y+7}" font-size="18" font-weight="800" fill="var(--ink)" font-family="Wanted Sans, sans-serif">${t}</text>`;});
+  s+=`<circle cx="${cx}" cy="${cy}" r="46" fill="var(--mint)"/><text x="${cx}" y="${cy-3}" text-anchor="middle" font-size="16" font-weight="800" fill="var(--ink)" font-family="Wanted Sans, sans-serif">통합</text><text x="${cx}" y="${cy+18}" text-anchor="middle" font-size="16" font-weight="800" fill="var(--ink)" font-family="Wanted Sans, sans-serif">분석</text></svg>`;
+  return s;
+}
+
+/* boot: #literature 같은 주소로 들어오면 그 장으로 */
+const h0=(location.hash||'').slice(1);
+if(h0 && D.chapters.some(c=>c.id===h0)) openChapter(h0); else show('research');
+addEventListener('hashchange',()=>{ const k=(location.hash||'').slice(1); if(k && D.chapters.some(c=>c.id===k)) openChapter(k); else show('research'); });
+})();
+</script>
+</body>
+</html>
